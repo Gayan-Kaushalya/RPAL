@@ -4,26 +4,29 @@ import re
 input_string = input()
 
 # Split the string using regular expression
-result_list = re.findall('\s+|\S+', input_string)
-#result_list = re.findall(r"^[a-zA-Z0-9_]*$", input_string)
+result_list = re.findall('\s+|\w+|[+\-<>&.@/:=~|$!#%^_[\]{}"\'\\\\]+', input_string)
 
 # Output the result list
 print(result_list)
 
+
 RE_IDENTIFIER = r'(?P<IDENTIFIER>[a-zA-Z][a-zA-Z0-9_]*)'
 RE_INTEGER = r'(?P<INTEGER>[0-9]+)'
-RE_OPERATORS = r'(?P<OPERATOR>[+\-<>&.@/:=~|$!#%^_[\]{}"\']+)'
-#RE_OPERATORS = r'(?P<OPERATOR>[+-*<>&.@/:=~\|$!#%^[]{}\"\'?]+)'
-#RE_STRING = r'(?P<STRING>\'\'\'(\\t|\\n|\\\\|\\\"|(|)|\;|\,|\'\'|[A-Za-z]|[0-9]|+|-|*|<|>|&|.|@|/|:|=|~|\||$|!|#|%|^|_|[|]|{|}|\"|\'|?])* \'\'\')'
-#RE_STRING = r'(?P<STRING>(?:\'\'\'|\\t|\\n|\\\\|\\\"|\(|\)|\;|\,|\'\'|[A-Za-z]|[0-9]|[+\-*<>\.@/:=~\|\$!#%^_\[\]\{\}\"\'\?])*)'
+RE_OPERATORS = r'(?P<OPERATOR>[+\-<>&.@/:=~|$!#%^_[\]{}"\'\\]+)'
+
 RE_STRING = r"(?P<STRING>'(?:\\t|\\n|\\\\|\\\"|\\'|[();, A-Za-z0-9+\-<>\.@/:=~\|\$!#%^_\[\]\{\}\"\'\?\s])*')"
-RE_SPACES = r'(?P<DELETE>[\s|ht|Eol]+)'
+RE_SPACES = r'(?P<DELETE>[" "|ht|Eol]+)'
 RE_COMMENT = r"(?P<DELETE>//(?:[;,\(\)\\\"[a-zA-Z][0-9]+|\+|\-|\*|<|>|&|\.|@|/|:|=|~|\||\$|!|#|%|\^|\[|\]|\{|\}|\"|\'])*Eol)"
-#RE_COMMENT = r'(?P<DELETE>//[\"|(|)|\;|\,|\\| |ht|[a-zA-Z]|[0-9]|[+|-|*|<|>|&|.|@|/|:|=|~|\||$|!|#|%|^| |[|]|{|}|\"|\'|?]]*Eol)'
+
 RE_PUNCTION1 = r'(?P<OPENBRACKET>\()'
 RE_PUNCTION2 = r'(?P<CLOSEBRACKET>\))'
 RE_PUNCTION3 = r'(?P<SEMICOLON>\;)'
 RE_PUNCTION4 = r'(?P<COMMA>\,)'
+
+#RE_OPERATORS = r'(?P<OPERATOR>[+-*<>&.@/:=~\|$!#%^[]{}\"\'?]+)'
+#RE_STRING = r'(?P<STRING>\'\'\'(\\t|\\n|\\\\|\\\"|(|)|\;|\,|\'\'|[A-Za-z]|[0-9]|+|-|*|<|>|&|.|@|/|:|=|~|\||$|!|#|%|^|_|[|]|{|}|\"|\'|?])* \'\'\')'
+#RE_STRING = r'(?P<STRING>(?:\'\'\'|\\t|\\n|\\\\|\\\"|\(|\)|\;|\,|\'\'|[A-Za-z]|[0-9]|[+\-*<>\.@/:=~\|\$!#%^_\[\]\{\}\"\'\?])*)'
+#RE_COMMENT = r'(?P<DELETE>//[\"|(|)|\;|\,|\\| |ht|[a-zA-Z]|[0-9]|[+|-|*|<|>|&|.|@|/|:|=|~|\||$|!|#|%|^| |[|]|{|}|\"|\'|?]]*Eol)'
 
 
 for token in result_list:
