@@ -11,7 +11,8 @@ print(result_list)
 
 
 RE_IDENTIFIER = r'(?P<IDENTIFIER>[a-zA-Z][a-zA-Z0-9_]*)'
-RE_INTEGER = r'(?P<INTEGER>[0-9]+)'
+#RE_INTEGER = r'(?P<INTEGER>[0-9]+!\D+)'
+RE_INTEGER = r'(?P<INTEGER>[0-9]+)(?![a-zA-Z])'
 RE_OPERATORS = r'(?P<OPERATOR>[+\-<>&.@/:=~|$!#%^_[\]{}"\'\\]+)'
 
 RE_STRING = r"(?P<STRING>'(?:\\t|\\n|\\\\|\\\"|\\'|[();, A-Za-z0-9+\-<>\.@/:=~\|\$!#%^_\[\]\{\}\"\'\?\s])*')"
