@@ -1,3 +1,27 @@
+class Token:
+    def __init__(self, content, type, line, previous_type, next_type):
+        self.content = content
+        self.type = type
+        self.line = line
+        self.previous_type = previous_type
+        self.next_type = next_type
+        self.is_first_token = False
+        self.is_last_token = False
+        
+
+    def __str__(self):
+        return f"{self.content} : {self.type}"
+    
+    def make_first_token(self):
+        self.is_first_token = True
+        
+    def make_last_token(self):
+        self.is_last_token = True
+        
+    def make_keyword(self):
+        self.type = "<KEYWORD>"
+
+
 letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 digits = '0123456789'
 underscore = '_'
@@ -5,14 +29,18 @@ operators = '+-*<>&.@/:=~|$!#%^_[]{}\"\'?'
 punctuation = '();,'
 newline = '\n'
 
+
+# Must check whether we can remove the following three lines.
 token_names = []
 tokens = []
 characters = []
+line_numbers = []
 
 
 def tokenize(characters):  
     i = 0
     current_token = ''
+    line_number = 1
     
     try:
         while i < len(characters):
@@ -27,6 +55,7 @@ def tokenize(characters):
                     
                 tokens.append(current_token)
                 token_names.append('<IDENTIFIER>')
+                line_numbers.append(line_number)
                 
                 current_token = ''
                 
@@ -48,6 +77,7 @@ def tokenize(characters):
                     
                     
                 tokens.append(current_token)
+                line_numbers.append(line_number)
                 
                 # If the token only has digits, we classify it as an integer. Otherwise, we classify it as an invalid token.
                 try:
@@ -73,6 +103,7 @@ def tokenize(characters):
                     
                 tokens.append(current_token)
                 token_names.append('<DELETE>')
+                line_numbers.append(line_number)
                 
                 current_token = ''
                 
@@ -96,6 +127,7 @@ def tokenize(characters):
                         
                 tokens.append(current_token)
                 token_names.append('<STRING>')
+                line_numbers.append(line_number)
                 
                 current_token = ''  
             
@@ -104,6 +136,7 @@ def tokenize(characters):
                 current_token += characters[i]
                 tokens.append(current_token)
                 token_names.append('<PUNCT>')
+                line_numbers.append(line_number)
                 
                 current_token = '' 
                 
@@ -121,6 +154,7 @@ def tokenize(characters):
                     
                 tokens.append(current_token)
                 token_names.append('<DELETE>')
+                line_numbers.append(line_number)
                 
                 current_token = ''
                 
@@ -128,6 +162,8 @@ def tokenize(characters):
             elif characters[i] == '\n':
                 tokens.append(newline)
                 token_names.append('<DELETE>')
+                line_numbers.append(line_number)
+                line_number += 1
                 
                 i += 1
                 
@@ -140,6 +176,7 @@ def tokenize(characters):
                             tokens.append(current_token)
                             token_names.append('<OPERATOR>')
                             current_token = ''
+                            line_numbers.append(line_number)
                             break
                         
                     if characters[i] == "'":
@@ -147,6 +184,7 @@ def tokenize(characters):
                             tokens.append(current_token)
                             token_names.append('<OPERATOR>')
                             current_token = ''
+                            line_numbers.append(line_number)
                             break
                     
                     current_token += characters[i]
@@ -154,6 +192,7 @@ def tokenize(characters):
                     
                 tokens.append(current_token)
                 token_names.append('<OPERATOR>')
+                line_numbers.append(line_number)
                 
                 current_token = ''
 
@@ -164,22 +203,35 @@ def tokenize(characters):
                   
     except IndexError:
         pass
+    
+    number_of_tokens = len(tokens)
 
+    for i in range(number_of_tokens):
+        if i == 0:
+            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], None, token_names[i+1])
+            tokens[i].make_first_token()
+        elif i == number_of_tokens - 1:
+            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], None)
+            tokens[i].make_last_token()
+        else:
+            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], token_names[i+1])
+            
+    return tokens
+
+'''
 try:
     with open(input(), 'r') as file:
         # rest of your code
         for line in file:
             for character in line:
                 characters.append(character)
-            tokenize(line)
-            characters.clear()
+        tokenize(characters)
+        characters.clear()
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
     print("An error occurred:", e)
 
-#Create a list of tuples with the tokens and their names
-token_list = [(tokens[i], token_names[i]) for i in range(len(tokens))]
-for x in token_list:
-    print("'"+x[0]+"'"+':'+x[1])
-
+for token in tokens:
+    print(token)
+'''
