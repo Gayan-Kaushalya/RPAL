@@ -1,4 +1,4 @@
-from scanner import tokenize
+from lexical_analyzer import tokenize
 
 keywords = [
     "let",
@@ -10,7 +10,6 @@ characters = []
 
 try:
     with open(input(), 'r') as file:
-        # rest of your code
         for line in file:
             for character in line:
                 characters.append(character)

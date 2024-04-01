@@ -211,27 +211,19 @@ def tokenize(characters):
             tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], None, token_names[i+1])
             tokens[i].make_first_token()
         elif i == number_of_tokens - 1:
-            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], None)
-            tokens[i].make_last_token()
+            
+            # We have to handle cases where last token is the newline character.
+            if tokens[i] == '\n':
+                tokens[i - 1].make_last_token()
+                tokens.remove(tokens[i])
+                token_names.remove(token_names[i])
+                line_numbers.remove(line_numbers[i])
+            else:
+                
+                tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], None)
+                tokens[i].make_last_token()
+
         else:
             tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], token_names[i+1])
             
     return tokens
-
-'''
-try:
-    with open(input(), 'r') as file:
-        # rest of your code
-        for line in file:
-            for character in line:
-                characters.append(character)
-        tokenize(characters)
-        characters.clear()
-except FileNotFoundError:
-    print("File not found.")
-except Exception as e:
-    print("An error occurred:", e)
-
-for token in tokens:
-    print(token)
-'''
