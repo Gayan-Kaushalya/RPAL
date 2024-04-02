@@ -1,4 +1,4 @@
-import screener2
+import screener
 
 
 
@@ -168,10 +168,83 @@ def procedure_R():
         read(')')
         
     
+def procedure_Rn():
+    if token_list[0].type in ['<IDENTIFIER>', '<INTEGER>', '<STRING>']:
+        read(token_list[0].content)
+        build_tree(token_list[0].content, 0)
         
+    elif token_list[0].content in ['true', 'false', 'nil', 'dummy']:
+        read(token_list[0].content)
+        build_tree(token_list[0].content, 0)
+        
+    elif token_list[0].content == '(':
+        read('(')
+        procedure_E()
+        read(')')
+        
+    else:
+        raise SyntaxError
+    
+# Declarations
+def procedure_D():
+    procedure_Da()
+    
+    if token_list[0].content == 'within':
+        read('within')
+        procedure_D()
+        build_tree('within', 2)
+        
+def procedure_Da():
+    procedure_Dr()
+    
+    while token_list[0].content == 'and':
+        read('and')
+        procedure_Dr()
+        build_tree('and', 2)
+        
+def procedure_Dr():
+    if token_list[0].content == 'rec':
+        read('rec')
+        procedure_Db()
+        build_tree('rec', 1)
+        
+    else:
+        procedure_Db()
+        
+def procedure_Db():
+    if token_list[0].content == '(':
+        read('(')
+        procedure_D()
+        read(')')
+        
+    elif token_list[0].type == '<IDENTIFIER>':
+        read(token_list[0].content)
+        read('=')
+        procedure_E()
+        build_tree('=', 2)
+        
+    else:
+        raise SyntaxError
+    
+# Value Bindings
+def procedure_Vb():
+    procedure_Vl()
+    
+    if token_list[0].content == 'within':
+        read('within')
+        procedure_Vb()
+        build_tree('within', 2)
+        
+def procedure_Vl():
+    read(token_list[0].content)
+    
+    if token_list[0].content == ',':
+        read(',')
+        procedure_Vl()
+        build_tree(',', 2)        
         
 
         
 file_name = input()
 
-token_list = screener2.screen(file_name)
+token_list = screener.screen(file_name)

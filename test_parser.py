@@ -1,5 +1,5 @@
-from scanner import Token
 from screener import screen
+
 '''
 class ASTNode:
     def __init__(self, type, value=None, children=None):
@@ -206,7 +206,7 @@ def parse_Vl(tokens):
             if tokens and tokens[0].type == 'IDENTIFIER':
                 tokens.pop(0)
             else:
-                return SyntaxError
+                return SyntaxError       
     
 '''
 def print_ast(node, depth=0):
@@ -226,5 +226,4 @@ for token in tokens:
     print(token.content)
 ast = parse_program(tokens)
 print_ast(ast)
-
 '''
