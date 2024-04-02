@@ -26,12 +26,15 @@ def parse_E(tokens):
     if tokens and tokens[0].content == 'let':  
         tokens.pop(0)  
         parse_D(tokens)
+        
+#        build_tree('let', 2)
+        
         if tokens and tokens[0].content == 'in':
             tokens.pop(0) 
             parse_E(tokens) 
             
             build_tree('let', 2)      # Where do we create the node for 'in'?
-            print("E -> let D in E")
+       #     print("E -> let D in E")
             
         else:
             return SyntaxError
@@ -48,30 +51,46 @@ def parse_E(tokens):
             parse_E(tokens)
             
             build_tree('lambda', 2)
-            print("E -> fn Vb+ . E")
+    #        print("E -> fn Vb+ . E")
             
         else:
             return SyntaxError
     else:
         parse_Ew(tokens)
+        
+  #      print("E -> Ew")
+        
 
 def parse_Ew(tokens):
     parse_T(tokens)
     if tokens and tokens[0].content == 'where':
         tokens.pop(0)  
         parse_Dr(tokens)
+        
+        build_tree('where', 2)
+   #     print("Ew -> T where Dr")
+        
+        # print(Ew -> T)
 
 def parse_T(tokens):
     parse_Ta(tokens)
     while tokens and tokens[0].content == ',':
         tokens.pop(0)  
         parse_Ta(tokens)
+        
+    build_tree('tau', 2)                   ## Not sure about this and other procedures with common prefixes on right and plus symbol
+ #       print("T -> Ta , T")
 
 def parse_Ta(tokens):
     parse_Tc(tokens)
     while tokens and tokens[0].content == 'aug':
         tokens.pop(0)  
         parse_Tc(tokens)
+        
+        build_tree('aug', 2)
+   #     print("Ta -> Ta aug Tc")
+        
+    # print("Ta -> Tc")
 
 def parse_Tc(tokens):
     parse_B(tokens)
@@ -81,6 +100,10 @@ def parse_Tc(tokens):
         if tokens and tokens[0].content == '|':
             tokens.pop(0)  
             parse_Tc(tokens)
+            
+            build_tree('->', 2)
+     #       print("Tc -> B -> Tc | Tc")
+            
         else:
             return SyntaxError
 
