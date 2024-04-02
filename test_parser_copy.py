@@ -1,6 +1,7 @@
 from screener import screen
 
 stack = []
+p = None
 
 class Node(content, left_child=None, right_child=None):
     def __init__(self, content, left_child=None, right_child=None):
@@ -28,6 +29,10 @@ def parse_E(tokens):
         if tokens and tokens[0].content == 'in':
             tokens.pop(0) 
             parse_E(tokens) 
+            
+            build_tree('let', 2)      # Where do we create the node for 'in'?
+            print("E -> let D in E")
+            
         else:
             return SyntaxError
             # print("Syntax Error in line {token[0].line}. Expected 'in' but got {tokens[0].content}")
@@ -220,8 +225,8 @@ def parse_Vl(tokens):
                 return SyntaxError       
 
 
-def build_tree(tokens, content, num_children):
-    p = None # Change the variable name later
+def build_tree(content, num_children):
+  #  p = None # Change the variable name later
     
     for i in range(num_children):
         c = stack.pop(0)
