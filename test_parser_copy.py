@@ -32,6 +32,7 @@ def parse_E(tokens):
     #    build_tree('let', 2)
         
         if tokens and tokens[0].content == 'in':
+            
             tokens.pop(0) 
             parse_E(tokens) 
             
@@ -321,7 +322,7 @@ def parse_Vl(tokens):
 
 
 def build_tree(content, num_children):
- #   p = None # Change the variable name later
+
     
     for i in range(num_children):
         c = stack.pop(0)
@@ -346,7 +347,7 @@ def print_ast(node, depth=0):
 def print_ast(node, depth=0):
     if node is not None:
         if len(stack) == 0:
-            print("Start of AST:")
+            print("Empty stack")
         else:       
             print("  " * depth + f".{node.content}")
             print_ast(node.left_child, depth + 1)
