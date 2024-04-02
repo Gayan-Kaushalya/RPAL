@@ -63,8 +63,10 @@ def screen(file_name):
 
     return token_list
 
+'''
 file = input()
 token_list = screen(file)
 #print(len(token_list))
 for token in token_list:
     print(token)
+    '''

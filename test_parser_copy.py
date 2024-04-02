@@ -1,14 +1,15 @@
 from screener import screen
 
-stack = []
-p = None
-
-class Node(content, left_child=None, right_child=None):
+class Node:
     def __init__(self, content, left_child=None, right_child=None):
         self.content = content
         self.left_child = left_child
         self.right_child = right_child
     
+stack = []
+p = None
+
+
 
 '''
 class Node:
@@ -19,6 +20,7 @@ class Node:
 '''
 
 def parse_program(tokens):
+    print("Parsing program")   # When the program runs correctly, we can erase this line.
     # Parse the program starting from the root rule
     return parse_E(tokens)
 
@@ -27,7 +29,7 @@ def parse_E(tokens):
         tokens.pop(0)  
         parse_D(tokens)
         
-#        build_tree('let', 2)
+    #    build_tree('let', 2)
         
         if tokens and tokens[0].content == 'in':
             tokens.pop(0) 
@@ -60,7 +62,6 @@ def parse_E(tokens):
         
   #      print("E -> Ew")
         
-
 def parse_Ew(tokens):
     parse_T(tokens)
     if tokens and tokens[0].content == 'where':
@@ -112,68 +113,114 @@ def parse_B(tokens):
     while tokens and tokens[0].content == 'or':
         tokens.pop(0)  
         parse_Bt(tokens)
+        
+        build_tree('or', 2)
+        
+    # print("B -> Bt")
+    # print("B -> B or Bt")
 
 def parse_Bt(tokens):
     parse_Bs(tokens)
     while tokens and tokens[0].content == '&':
         tokens.pop(0)  
         parse_Bs(tokens)
+        
+        build_tree('&', 2)
+        
+    # print("Bt -> Bt & Bs")
+    # print("Bt -> Bs")
 
 def parse_Bs(tokens):
     if tokens and tokens[0].content == 'not':
         tokens.pop(0)  
         parse_Bp(tokens)
+        
+        build_tree('not', 1)
+        # print("Bs -> not Bp")
+        
     else:
         parse_Bp(tokens)
+        # print("Bs -> Bp")
 
 def parse_Bp(tokens):
     parse_A(tokens)
-    while tokens and tokens[0] in ['gr', '>', 'ge', '>=', 'ls', '<', 'le', '<=', 'eq', 'ne']:
+    while tokens and tokens[0].content in ['gr', '>', 'ge', '>=', 'ls', '<', 'le', '<=', 'eq', 'ne']:
         tokens.pop(0)
         parse_A(tokens)
+        
+        build_tree(tokens[0].content, 2)
+        
+    # print("Bp -> A")  There are more rules here
 
 def parse_A(tokens):
-    while tokens and tokens[0] in ['+', '-']:
+    while tokens and tokens[0].content in ['+', '-']:
         tokens.pop(0)  
         parse_At(tokens)
+        
+        build_tree(tokens[0].content, 2)
+        # print("A -> A + At")
+        # print("A -> A - At")
+        
     else:
         return SyntaxError
         
 def parse_At(tokens):
     parse_Af(tokens)
-    while tokens and tokens[0] in ['*', '/']:
+    while tokens and tokens[0].content in ['*', '/']:
         tokens.pop(0)  
         parse_Af(tokens)
-
+        
+        build_tree(tokens[0].content, 2)
+        # print("At -> At * Af")
+        # print("At -> At / Af")
+        
 def parse_Af(tokens):
     parse_Ap(tokens)
-    if tokens and tokens[0] == '**':
+    if tokens and tokens[0].content == '**':
         tokens.pop(0)  
         parse_Af(tokens)
+        
+        build_tree('**', 2)
+        # print("Af -> Ap ** Af")
+        # print("Af -> Ap")
 
 def parse_Ap(tokens):
     parse_R(tokens)
-    while tokens and tokens[0] == '@':
+    while tokens and tokens[0].content == '@':
         tokens.pop(0)  
         if tokens and tokens[0].type == '<IDENTIFIER>':
             tokens.pop(0).content  
             parse_R(tokens)
+            
+            build_tree('@', 2)
+            # print("Ap -> Ap @ <IDENTIFIER> R")
+            # print("Ap -> R")
 
+# Have to check this again
 def parse_R(tokens):
     parse_Rn(tokens)
-    while tokens and tokens[0] in ['(', '<IDENTIFIER>', '<INTEGER>', '<STRING>', 'true', 'false', 'nil', 'dummy']:
-        parse_Rn(tokens)
+    while tokens[0].content in ['true', 'false', 'nil', 'dummy', '('] or tokens[0].type in ['<IDENTIFIER>', '<INTEGER>', '<STRING>']:
+        tokens.pop(0)
 
 def parse_Rn(tokens):
     if tokens and tokens[0].type in ['<IDENTIFIER>', '<INTEGER>', '<STRING>']:
-        tokens.pop(0) 
+        tokens.pop(0)
+        
+        
+         
     elif tokens and tokens[0] in ['true', 'false', 'nil', 'dummy']:
         tokens.pop(0)  
+        
+        build_tree(tokens[0].content, 0)
+        
     elif tokens and tokens[0].content == '(':
         tokens.pop(0)  
         parse_E(tokens)
         if tokens and tokens[0].content == ')':
-            tokens.pop(0)  
+            tokens.pop(0) 
+            
+            build_tree('(', 1)
+             
         else:
             return SyntaxError
     else:
@@ -184,17 +231,25 @@ def parse_D(tokens):
     if tokens and tokens[0] == 'within':
         tokens.pop(0)  
         parse_D(tokens)
+        
+        build_tree('within', 2)
+        # print("D -> Da within D")
 
 def parse_Da(tokens):
     parse_Dr(tokens)
     while tokens and tokens[0] == 'and':
         tokens.pop(0)  
         parse_Dr(tokens)
+        
+        build_tree('and', 2)
 
 def parse_Dr(tokens):
     if tokens and tokens[0] == 'rec':
         tokens.pop(0)
         parse_Db(tokens)
+        
+        build_tree('rec', 1)
+        
     else:
         parse_Db(tokens)
 
@@ -211,6 +266,9 @@ def parse_Db(tokens):
         if tokens and tokens[0]== '=':
             tokens.pop(0)  
             parse_E(tokens)
+            
+            build_tree('fcn_form', 2)
+            
         else:
             while True:
                 parse_Vb(tokens)
@@ -220,6 +278,9 @@ def parse_Db(tokens):
         if tokens and tokens[0].content == '=':
             tokens.pop(0)  
             parse_E(tokens)
+            
+            build_tree('=', 2)
+            
         else:
             return SyntaxError
 
@@ -230,6 +291,9 @@ def parse_Vb(tokens):
         tokens.pop(0)  
         if tokens and tokens[0] == ')':
             tokens.pop(0)  
+            
+            build_tree('()', 0)
+            
         elif tokens and tokens[0] == '<IDENTIFIER>':
             parse_Vl(tokens)
             if tokens and tokens[0] == ')':
@@ -245,15 +309,19 @@ def parse_Vl(tokens):
     if tokens and tokens[0].type == 'IDENTIFIER':
         tokens.pop(0)
         while tokens and tokens[0].content == ',':
-            tokens.pop(0)  
+            tokens.pop(0) 
+            
+            build_tree(',', 2)
+             
             if tokens and tokens[0].type == 'IDENTIFIER':
-                tokens.pop(0)
+                tokens.pop(0)                
             else:
-                return SyntaxError       
+                return SyntaxError    
+               
 
 
 def build_tree(content, num_children):
-  #  p = None # Change the variable name later
+ #   p = None # Change the variable name later
     
     for i in range(num_children):
         c = stack.pop(0)
@@ -274,12 +342,25 @@ def print_ast(node, depth=0):
             print_ast(child, depth + 1)
 
 '''
+
+def print_ast(node, depth=0):
+    if node is not None:
+        if len(stack) == 0:
+            print("Start of AST:")
+        else:       
+            print("  " * depth + f".{node.content}")
+            print_ast(node.left_child, depth + 1)
+            print_ast(node.right_child, depth + 1)
+        
+
+
 file_name = input()
 tokens = screen(file_name)
-print(len(tokens))
+
+'''
 for token in tokens:
     print(token.content)
+'''   
     
-    
-#ast = parse_program(tokens)
-#print_ast(ast)
+ast = parse_program(tokens)
+print_ast(ast)
