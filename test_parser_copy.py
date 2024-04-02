@@ -41,11 +41,15 @@ def parse_E(tokens):
         tokens.pop(0) 
         while True:
             parse_Vb(tokens)
-            if not tokens or (tokens[0].content != '(' and tokens[0].type != '<IDENTIFIER>'):
+            if not tokens or (tokens[0].content != '(' and tokens[0].type != '<IDENTIFIER>'):  # Not sure about this condition
                 break
         if tokens and tokens[0].content == '.':
             tokens.pop(0)  
             parse_E(tokens)
+            
+            build_tree('lambda', 2)
+            print("E -> fn Vb+ . E")
+            
         else:
             return SyntaxError
     else:
