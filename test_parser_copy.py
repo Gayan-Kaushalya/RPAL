@@ -9,7 +9,12 @@ class Node:
 stack = []
 p = None
 
-
+def read(token):
+    if token.type == '<KEYWORD>':
+       stack.insert(0, Node(token.content))  # Not sure whether to append or insert 
+       
+    elif token.type in ['<IDENTIFIER>', '<INTEGER>', '<STRING>']:
+        stack.insert(0, Node("<" + token.type + ":"+ str(token.content) + ">"))
 
 '''
 class Node:
@@ -29,14 +34,15 @@ def parse_E(tokens):
         tokens.pop(0)  
         parse_D(tokens)
         
-    #    build_tree('let', 2)
+        build_tree('let', 2)
         
         if tokens and tokens[0].content == 'in':
             
             tokens.pop(0) 
             parse_E(tokens) 
             
-            build_tree('let', 2)      # Where do we create the node for 'in'?
+            build_tree('in', 2)   
+                       # Where do we create the node for 'in'?
        #     print("E -> let D in E")
             
         else:
@@ -209,7 +215,7 @@ def parse_Rn(tokens):
         
         
          
-    elif tokens and tokens[0] in ['true', 'false', 'nil', 'dummy']:
+    elif tokens and tokens[0].content in ['true', 'false', 'nil', 'dummy']:
         tokens.pop(0)  
         
         build_tree(tokens[0].content, 0)
