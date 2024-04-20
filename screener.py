@@ -5,7 +5,9 @@ keywords = [
     "in",
     "Print"
 ]
+
 characters = []
+
 def screen(file_name):
     token_list = []
     try:
@@ -17,8 +19,10 @@ def screen(file_name):
             characters.clear()
     except FileNotFoundError:
         print("File not found.")
+        exit(1)
     except Exception as e:
         print("An error occurred:", e)
+        exit(1)
 
     # This forward loop check doesn't remove consequent <DELETE> tokens
     ''' 

@@ -31,25 +31,29 @@ def parse_program(tokens):
 
 def parse_E(tokens):
     if tokens and tokens[0].content == 'let':  
-        tokens.pop(0)  
+        first = tokens.pop(0) 
+    #   read('let')  
         parse_D(tokens)
         
-        build_tree('let', 2)
-        
         if tokens and tokens[0].content == 'in':
-            
             tokens.pop(0) 
+            # read('in')
             parse_E(tokens) 
             
-            build_tree('in', 2)   
-                       # Where do we create the node for 'in'?
+            build_tree('let', 2)   
+                                       # Where do we create the node for 'in'?
        #     print("E -> let D in E")
             
         else:
-            return SyntaxError
-            # print("Syntax Error in line {token[0].line}. Expected 'in' but got {tokens[0].content}")
+            print("Syntax Error in line {token[0].line}. Expected 'in' but got {tokens[0].content}")
+            return
         
     elif tokens and tokens[0].content == 'fn':
+        
+        n = 0
+        
+        
+        
         tokens.pop(0) 
         while True:
             parse_Vb(tokens)
@@ -234,6 +238,7 @@ def parse_Rn(tokens):
         return SyntaxError 
 
 def parse_D(tokens):
+    print("Parsing D")
     parse_Da(tokens)
     if tokens and tokens[0] == 'within':
         tokens.pop(0)  
