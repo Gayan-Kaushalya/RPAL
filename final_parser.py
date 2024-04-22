@@ -29,16 +29,16 @@ def print_tree(node):
             print_tree(sibling)
             
 def read(token):
-    if token.type in ["IDENTIFIER", "INTEGER", "STRING"]:
-        if token.type == "IDENTIFIER":
+    if token.type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"]:
+        if token.type == "<IDENTIFIER>":
             leaf = Node("<ID:" + token.content + ">")
             stack.append(leaf)
             
-        if token.type == "INTEGER":
+        if token.type == "<INTEGER>":
             leaf = Node("<INT:" + str(token.content) + ">")
             stack.append(leaf)
             
-        if token.type == "STRING":
+        if token.type == "<STRING>":
             leaf = Node("<STR:" + token.content + ">")
             stack.append(leaf)
             
@@ -52,7 +52,7 @@ def read(token):
 def build_tree(token, num_children):
     # Need some code to ensure correnct operation = a print function
     
-    node = Node(token.content)
+    node = Node(token)
     node.content = None
     node.line = -1
     node.child = None
@@ -79,6 +79,7 @@ def procedure_E():
     if tokens[0].content == "let":
         read(tokens[0])
         tokens.pop(0)
+        print("E -> let D in E")
         procedure_D()
         
         if tokens[0].content == "in":
@@ -87,15 +88,19 @@ def procedure_E():
             procedure_E()
             build_tree("let", 2)
             
+         #   print("E -> let D in E")
+            
         else:
-            print("Syntax error in line " + str(tokens[0].line) + ": Expecter 'in' but got " + str(tokens[0].content))
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected 'in' but got " + str(tokens[0].content))
+         #   print_tree(stack[0])
             exit(1)
             
     elif tokens[0].content == "fn":
         n = 0
         read(tokens[0])
+        tokens.pop(0)
         
-        while tokens[0].type == "IDENTIFIER" or tokens[0].content == "(":
+        while tokens[0].type == "<IDENTIFIER>" or tokens[0].content == "(":
             procedure_Vb()
             n += 1
             
@@ -114,9 +119,12 @@ def procedure_E():
             exit(1)
             
     else:
+   #     print(tokens[0].content)
+        print("E -> Ew")
         procedure_Ew()
         
 def procedure_Ew():
+    print("Ew -> T")
     procedure_T()
     
     if tokens[0].content in ["where", "within"]:  # within was just suggested
@@ -126,6 +134,7 @@ def procedure_Ew():
         build_tree("where", 2)
         
 def procedure_T():
+    print("T -> Ta")    
     procedure_Ta()
     
     n = 0
@@ -143,6 +152,7 @@ def procedure_T():
         pass
     
 def procedure_Ta():
+    print("Ta -> Tc")
     procedure_Tc()
     
     while tokens[0].content == "aug":
@@ -152,6 +162,7 @@ def procedure_Ta():
         build_tree("aug", 2)
         
 def procedure_Tc():
+    print("Tc -> B")
     procedure_B()
     
     while tokens[0].content == "->":
@@ -170,6 +181,7 @@ def procedure_Tc():
             exit(1)
             
 def procedure_B():
+    print("B -> Bt")
     procedure_Bt()
     
     while tokens[0].content == "or":
@@ -179,6 +191,7 @@ def procedure_B():
         build_tree("or", 2)
         
 def procedure_Bt():
+    print("Bt -> Bs")
     procedure_Bs()
     
     while tokens[0].content == "&":
@@ -195,6 +208,7 @@ def procedure_Bs():
         build_tree("not", 1)
         
     else:
+        print("Bs -> Bp")
         procedure_Bp()
         
 def procedure_Bp():
@@ -207,12 +221,15 @@ def procedure_Bp():
         build_tree(dic[tokens[0].content], 2)
         
 def procedure_A():
+    print(f"curren token: {tokens[0].content}")
+    
     if tokens[0].content in ["+", "-"]:
         read(tokens[0])
         tokens.pop(0)
         build_tree(dic[tokens[0].content], 1)
         
     else:
+        print("A -> At")
         procedure_At()
         
     while tokens[0].content in ["+", "-"]:
@@ -228,6 +245,7 @@ def procedure_A():
             build_tree("neg", 1)
             
 def procedure_At():
+    print("At -> Af")
     procedure_Af()
     
     while tokens[0].content in "*" or tokens[0].content == "/":
@@ -243,6 +261,7 @@ def procedure_At():
             build_tree("/", 2)
             
 def procedure_Af(): 
+    print("Af -> Ap")
     procedure_Ap()
     
     while tokens[0].content == "**":
@@ -252,6 +271,7 @@ def procedure_Af():
         build_tree("**", 2)
         
 def procedure_Ap():
+    print("Ap -> R")
     procedure_R()
     
     while tokens[0].content == "@":
@@ -261,15 +281,17 @@ def procedure_Ap():
             build_tree("@", 2)
             
 def procedure_R():
+    print("R -> Rn")
     procedure_Rn()
     
-    while tokens[0].type in ["IDENTIFIER", "INTEGER", "STRING", "KEYWORD"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords:
-        
+    while tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>", "<KEYWORD>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords:
+        print()
         procedure_Rn()
         build_tree("gamma", 2)
 
 def procedure_Rn():
-    if tokens[0].type in ["IDENTIFIER", "INTEGER", "STRING"]:
+    print(tokens[0].content)
+    if tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"]:
         read(tokens[0])
         tokens.pop(0)
         
@@ -296,7 +318,8 @@ def procedure_Rn():
             exit(1)
             
 def procedure_D():
-    print("D")
+#print(tokens[0].content)
+    print("D -> Da")
     procedure_Da()
     
     if tokens[0].content == "within":
@@ -304,8 +327,13 @@ def procedure_D():
         tokens.pop(0)
         procedure_D()
         build_tree("within", 2)
+        print("D -> Da within D")
+        
+    else:
+        print("D -> Da")  # Remove this line
         
 def procedure_Da():
+    print('Da -> Dr')
     procedure_Dr()
     
     n = 0
@@ -318,6 +346,10 @@ def procedure_Da():
         
     if n > 0:
         build_tree("and", n+1)
+        print("Da -> Dr ( and Dr )+")
+    else:
+        print('Da -> Dr')
+       # pass
         
 def procedure_Dr():                             # Not sure
     if tokens[0].content == "rec":
@@ -325,11 +357,15 @@ def procedure_Dr():                             # Not sure
         tokens.pop(0)
         procedure_Db()
         build_tree("rec", 1)
+        print("Dr -> rec Db")
         
     else:
+        print("Dr -> Db")
         procedure_Db()
         
+        
 def procedure_Db():
+  #  print(tokens[0].type)
     if tokens[0].content == "(":
         read(tokens[0])
         tokens.pop(0)
@@ -338,13 +374,15 @@ def procedure_Db():
         if tokens[0].content == ")":
             read(tokens[0])
             tokens.pop(0)
-            build_tree("()", 1)
+    #        build_tree("()", 1)
+            print("Db -> ( D )")
             
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
             exit(1)
             
-    elif tokens[0].type == "IDENTIFIER":
+    elif tokens[0].type == "<IDENTIFIER>":
+        print("Db -> ...")
         read(tokens[0])
         tokens.pop(0)
         
@@ -359,22 +397,26 @@ def procedure_Db():
                 tokens.pop(0)
                 procedure_E()
                 build_tree("=", 2)
+                print("Db -> Vl = E")
                 
             else:
                 print("Syntax error in line " + str(tokens[0].line) + ": Expected '=' but got " + str(tokens[0].content))
                 exit(1)
                 
         else:
+            print(tokens[0].content)
             if tokens[0].content == "=":
                 read(tokens[0])
                 tokens.pop(0)
                 procedure_E()
                 build_tree("=", 2)
+                print("Db -> <IDENTIFIER> = E")
                 
             else:
                 n = 0
                 
-                while tokens[0].type in ["IDENTIFIER","KEYWORD"] or tokens[0].content == "(": # not sure
+                while tokens[0].type in ["<IDENTIFIER>","<KEYWORD>"] or tokens[0].content == "(": # not sure
+                    print("Db -> <IDENTIFIER> Vb+ = E")
                     procedure_Vb()
                     n += 1
                     
@@ -393,7 +435,9 @@ def procedure_Db():
                     exit(1)
                     
 def procedure_Vb():
-    if tokens[0].type == "IDENTIFIER": # not sure we need keywords too
+    print(tokens[0].content)            ###############
+    if tokens[0].type == "<IDENTIFIER>": # not sure we need keywords too
+        print("Vb -> <IDENTIFIER>")
         read(tokens[0])
         tokens.pop(0)
         
@@ -410,28 +454,33 @@ def procedure_Vb():
                 read(tokens[0])
                 tokens.pop(0)
                 
-            else:
-                procedure_Vl()
+        else:
+            procedure_Vl()
+            
+            print(tokens[0].content)
+            if tokens[0].content == ")":
+                #read(tokens[0])
+                #tokens.pop(0)
+                pass
                 
-                if tokens[0].content == ")":
-                    #read(tokens[0])
-                    #tokens.pop(0)
-                    pass
-                    
-                else:
-                    print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
-                    exit(1)
-                    
-        read(tokens[0])
+            else:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
+                exit(1)
+                
+        #############################################    
+        read(tokens[0])           
         tokens.pop(0)
+        print("returning to Db")           #################
         
     else:
-        print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or '(' but got " + str(tokens[0].content))
+        print("Syntax error in line " + str(tokens[0].line) + ": Expected an <IDENTIFIER> or '(' but got " + str(tokens[0].content))
         exit(1)
         
 def procedure_Vl():
-    if tokens[0].type not in ["IDENTIFIER", "KEYWORD"]:
-        print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or keyword but got " + str(tokens[0].content))
+    print("Vl")
+    print(tokens[0].content)
+    if tokens[0].type not in ["<IDENTIFIER>", "<KEYWORD>"]:
+        print("Syntax error in line " + str(tokens[0].line) + ": Expected an <IDENTIFIER> or keyword but got " + str(tokens[0].content))
         exit(1)
         
     else:
@@ -443,8 +492,8 @@ def procedure_Vl():
         while tokens[0].content == ",":
             read(tokens[0])
             tokens.pop(0)
-            if tokens[0].type not in ["IDENTIFIER", "KEYWORD"]:
-                print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or keyword but got " + str(tokens[0].content))
+            if tokens[0].type not in ["<IDENTIFIER>", "<KEYWORD>"]:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected an <IDENTIFIER> or keyword but got " + str(tokens[0].content))
                 exit(1)
                 
             else:

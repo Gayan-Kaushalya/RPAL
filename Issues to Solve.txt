@@ -33,3 +33,7 @@ error handling
 build_tree when there is a while loop
 
 When we pop a token, the new tokens[0] is not the token we want.
+
+keywords and identifiers
+
+print tree before / after function call
