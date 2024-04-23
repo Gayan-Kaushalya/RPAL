@@ -129,7 +129,7 @@ def procedure_Ew():
     procedure_T()
     
     if tokens[0].content in ["where", "within"]:  # within was just suggested
-        print("This is where i am now")
+        print("E -> where Dr")
         read(tokens[0])
         tokens.pop(0)
         procedure_Dr()
@@ -169,8 +169,10 @@ def procedure_Ta():
 def procedure_Tc():
     print("Tc -> B")
     procedure_B()
+    print("I returned")
     
     while tokens[0].content == "->":
+        print('B -> Tc | Tc')
         read(tokens[0])
         tokens.pop(0)
         procedure_Tc()
@@ -221,10 +223,12 @@ def procedure_Bp():
     procedure_A()
     
     if tokens[0].content in [">", ">=", "<", "<=", "gr", "ge", "ls", "le", "eq", "ne"]:
+        print(f"A -> A {tokens[0].content} A")
+        temp = tokens[0]
         read(tokens[0])
         tokens.pop(0)
         procedure_A()
-        build_tree(dic[tokens[0].content], 2)
+        build_tree(dic[temp.content], 2)
         
 def procedure_A():
     print(f"curren token: {tokens[0].content}")
@@ -232,6 +236,8 @@ def procedure_A():
     if tokens[0].content in ["+", "-"]:
         read(tokens[0])
         tokens.pop(0)
+        print('A -> A +/ A')
+        procedure_At()
         build_tree(dic[tokens[0].content], 1)
         
     else:
@@ -291,7 +297,7 @@ def procedure_R():
     procedure_Rn()
     
     
-    while (tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords)  and tokens[0].content not in ['where','rec'] : ## Not sure. But had to do.
+    while (tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords)  and tokens[0].content not in ['where','rec','eq'] : ## Not sure. But had to do. # have to add other words such as neg, ge
     #    if tokens[0].content not in ['where']: 
             print("heee")                                                            
             print(tokens[0])
@@ -304,6 +310,7 @@ def procedure_R():
 def procedure_Rn():
     print(tokens[0].content)
     if tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"]:
+        print(f"Rn -> {tokens[0].type}")
         read(tokens[0])
         tokens.pop(0)
         
@@ -324,6 +331,7 @@ def procedure_Rn():
             
     else:
         if tokens[0].content in pseudo_keywords:
+            print(f"Rn -> {tokens[0].content}")
             read(tokens[0])
             tokens.pop(0)
             
@@ -367,12 +375,12 @@ def procedure_Da():
         
 def procedure_Dr():                             # Not sure
     if tokens[0].content == "rec":
+        print("Dr -> rec Db")
         read(tokens[0])
         tokens.pop(0)
         procedure_Db()
         build_tree("rec", 1)
-        print("Dr -> rec Db")
-        
+         
     else:
         print("Dr -> Db")
         procedure_Db()
@@ -411,7 +419,7 @@ def procedure_Db():
                 tokens.pop(0)
                 procedure_E()
                 build_tree("=", 2)
-                print("Db -> Vl = E")
+                print("Db -> Vl = E")          #### Not sre this and below one
                 
             else:
                 print("Syntax error in line " + str(tokens[0].line) + ": Expected '=' but got " + str(tokens[0].content))
@@ -424,13 +432,14 @@ def procedure_Db():
                 tokens.pop(0)
                 procedure_E()
                 build_tree("=", 2)
-                print("Db -> <IDENTIFIER> = E")
+                print("Db -> <IDENTIFIER> = E")      ## Not sure
                 
             else:
                 n = 0
                 
                 while tokens[0].type in ["<IDENTIFIER>","<KEYWORD>"] or tokens[0].content == "(": # not sure
                     print("Db -> <IDENTIFIER> Vb+ = E")
+                    print(tokens[0])
                     procedure_Vb()
                     n += 1
                     print(tokens[0].content)
@@ -461,31 +470,30 @@ def procedure_Vb():
         tokens.pop(0)
         
         if tokens[0].content == ")":
-            read(tokens[0])
-            tokens.pop(0)
-            
-            if tokens[0].content == ")":
+                print('Vb->( )')
                 build_tree("()", 0)
                 read(tokens[0])
                 tokens.pop(0)
+               
                 
         else:
+            print ("Vb -> ( Vl )")
             procedure_Vl()
             
       #      print(tokens[0].content)
             
             if tokens[0].content == ")":
-                #read(tokens[0])
-                #tokens.pop(0)
-                pass
+                read(tokens[0])
+                tokens.pop(0)
+                
                 
             else:
                 print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
                 exit(1)
                 
         #############################################    
-        read(tokens[0])           
-        tokens.pop(0)
+      #  read(tokens[0])           
+      #  tokens.pop(0)
         print("returning to Db")           #################
         
     else:
@@ -494,7 +502,7 @@ def procedure_Vb():
         
 def procedure_Vl():
   #  print("Vl")             ######
-  #  print(tokens[0].content)
+ #   print(tokens[0].content)
     if tokens[0].type not in ["<IDENTIFIER>", "<KEYWORD>"]:
         print("Syntax error in line " + str(tokens[0].line) + ": Expected an <IDENTIFIER> or keyword but got " + str(tokens[0].content))
         exit(1)
@@ -510,7 +518,7 @@ def procedure_Vl():
         
         while tokens[0].content == ",":
             read(tokens[0])
-            print(tokens[0].content)
+         #   print(tokens[0].content)
             tokens.pop(0)
             if tokens[0].type not in ["<IDENTIFIER>", "<KEYWORD>"]:
                 print("Syntax error in line " + str(tokens[0].line) + ": Expected an <IDENTIFIER> or keyword but got " + str(tokens[0].content))
@@ -526,8 +534,16 @@ def procedure_Vl():
     
 file_name = input()
 tokens = screen(file_name)
+
+'''
 try:
     procedure_E()
 except:
     pass
-print_tree(stack[0])
+    '''
+    
+procedure_E()
+
+#for node in stack:
+   # print(node.children)
+#print_tree(stack[0])
