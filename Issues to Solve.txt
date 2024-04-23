@@ -36,4 +36,10 @@ When we pop a token, the new tokens[0] is not the token we want.
 
 keywords and identifiers
 
-print tree before / after function call
+build_tree before / after function call
+
+problem in vb
+
+keyword list
+
+why did not where become a keyword?

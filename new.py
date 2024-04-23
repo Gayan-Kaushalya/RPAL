@@ -25,3 +25,22 @@ def E(self):
                 self.AST.append(Node("lambda_", "lambda", n + 1))                    
         else:
             self.Ew()
+  
+'''       
+def T():
+    #'T -> Ta ( ',' Ta)*'
+    Ta()
+    while next_token()==',':
+        read_token(',')
+        Ta()
+        
+    print('T -> Ta ( , Ta)*')
+    
+def read_token(token):
+    if token == next_token():
+        stack.push(Node(token))  # Pass a Node instance as the argument to push
+        global i
+        i = i + 1
+    else:
+        print("Error ❌ token mismatch.")
+'''   

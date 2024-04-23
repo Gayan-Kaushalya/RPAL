@@ -4,6 +4,7 @@ keywords = [
     "let",
     "in",
     "Print"
+    "where"
 ]
 
 characters = []
