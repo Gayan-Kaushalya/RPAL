@@ -84,6 +84,8 @@ def procedure_E():
         procedure_D()
         
         if tokens[0].content == "in":
+            print("Current position")
+            print(tokens[0].content)
             read(tokens[0])
             tokens.pop(0)
             procedure_E()
@@ -142,7 +144,7 @@ def procedure_T():
     n = 0
     
     while tokens[0].content in ",":
-        print(tokens[0].content + "T")                  ########
+        print('T -> Ta (, Ta)+')             ########
         read(tokens[0])
         tokens.pop(0)
         procedure_Ta()
@@ -229,7 +231,8 @@ def procedure_Bp():
         tokens.pop(0)
         procedure_A()
         build_tree(dic[temp.content], 2)
-        
+ 
+ ## Not sure       
 def procedure_A():
     print(f"curren token: {tokens[0].content}")
     

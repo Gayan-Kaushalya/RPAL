@@ -43,3 +43,5 @@ problem in vb
 keyword list
 
 why did not where become a keyword?
+
+whre is ll2?
