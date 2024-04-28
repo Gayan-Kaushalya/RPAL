@@ -6,11 +6,11 @@ dic = {">": "gr", ">=": "ge", "<": "ls", "<=": "le", "==": "eq", "!=": "ne", "ge
 
 class Node:
     def __init__(self, content):
-        self.type = None           ####### Problematic
+     #   self.type = None           ####### Problematic
         self.content = content
-        self.line = -1
+      #  self.line = -1
         self.children = []  
-        self.siblings = []
+     #   self.siblings = []
         self.depth = 0
         
 def print_tree(node):
@@ -22,15 +22,19 @@ def print_tree(node):
        for child in node.children:
             child.depth = node.depth + 1
             print_tree(child) 
-            
+    '''      
     if len(node.siblings) > 0:
         for sibling in node.siblings:
             sibling.depth = node.depth
             print_tree(sibling)
+            ''' 
             
 def read(token):
     if token.type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"]:
-        if token.type == "<IDENTIFIER>":
+        if token.content in pseudo_keywords:
+            leaf = Node(token.content)
+            stack.append(leaf)
+        elif token.type == "<IDENTIFIER>":
             leaf = Node("<ID:" + token.content + ">")
             stack.append(leaf)
             
@@ -42,31 +46,31 @@ def read(token):
             leaf = Node("<STR:" + token.content + ">")
             stack.append(leaf)
             
-        if token.content in pseudo_keywords:
-            leaf = Node(token.content)
-            stack.append(leaf)
+        
             
     #    print("Now reading: " + token.content)
     
     
-def build_tree(token, num_children):
+def build_tree(content, num_children):
     # Need some code to ensure correnct operation = a print function
     
-    node = Node(token)
-    node.content = None
-    node.line = -1
-    node.child = None
-    node.siblings = None
+    node = Node(content)
+ #   node.children = [None]*num_children
+ #   node.content = None
+  #  node.line = -1
+  #  node.child = None
+ #   node.siblings = None
     
-    for i in range(num_children):
-        child = stack [-1]
-        stack.pop()
+    for i in range(num_children, 0 , - 1):
+        x = 0 - i
+        child = stack.pop(x)
         
-        if node.child != None:        ## is not
-            child.siblings = node.child
-            
-        node.child = child
-        node.line = child.line
+        
+   #     if node.child != None:        ## is not none
+   #         child.siblings = node.child
+        node.children.append(child)  
+    #    node.child = child
+   #     node.line = child.line
     
     # print_tree(node)   
     stack.append(node)
@@ -84,8 +88,8 @@ def procedure_E():
         procedure_D()
         
         if tokens[0].content == "in":
-            print("Current position")
-            print(tokens[0].content)
+         #   print("Current position")
+         #   print(tokens[0].content)
             read(tokens[0])
             tokens.pop(0)
             procedure_E()
@@ -103,6 +107,7 @@ def procedure_E():
         read(tokens[0])
         tokens.pop(0)
         
+        ## Loop whether we should call Vb before this
         while tokens[0].type == "<IDENTIFIER>" or tokens[0].content == "(":
             procedure_Vb()
             n += 1
@@ -226,7 +231,7 @@ def procedure_Bp():
     
     if tokens[0].content in [">", ">=", "<", "<=", "gr", "ge", "ls", "le", "eq", "ne"]:
         print(f"A -> A {tokens[0].content} A")
-        temp = tokens[0]
+        temp = tokens[0]       ### temp chanes, right?
         read(tokens[0])
         tokens.pop(0)
         procedure_A()
@@ -241,7 +246,7 @@ def procedure_A():
         tokens.pop(0)
         print('A -> A +/ A')
         procedure_At()
-        build_tree(dic[tokens[0].content], 1)
+        build_tree(dic[tokens[0].content], 1) ## There were some codes where this line was not for plus sign
         
     else:
         print("A -> At")
@@ -252,7 +257,7 @@ def procedure_A():
             read(tokens[0])
             tokens.pop(0)
             procedure_At()
-            build_tree("plus", 2)
+            build_tree("plus", 2)  
         else:
             read(tokens[0])
             tokens.pop(0)
@@ -290,10 +295,19 @@ def procedure_Ap():
     procedure_R()
     
     while tokens[0].content == "@":
+        read(tokens[0])
+        tokens.pop(0)
+         
+         # Not sure about below part   
+        if tokens[0].type == '<IDENTIFIER>':
             read(tokens[0])
             tokens.pop(0)
             procedure_R()
-            build_tree("@", 2)
+            build_tree("@", 3)        # Not sure whether this is 2 or 3
+            
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier but got " + str(tokens[0].content))
+            exit(1)
             
 def procedure_R():
   #  print("R -> Rn")
@@ -302,13 +316,15 @@ def procedure_R():
     
     while (tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords)  and tokens[0].content not in ['where','rec','eq'] : ## Not sure. But had to do. # have to add other words such as neg, ge
     #    if tokens[0].content not in ['where']: 
-            print("heee")                                                            
-            print(tokens[0])
-            ## This is where I am currently working on
-        #   print(f"current### token: {tokens[0].content}")
-            print("R -> R Rn")
-            procedure_Rn()
-            build_tree("gamma", 2)
+        print("heee")                                                            
+        print(tokens[0])
+        ## This is where I am currently working on
+    #   print(f"current### token: {tokens[0].content}")
+        print("R -> R Rn")
+        procedure_Rn()
+        build_tree("gamma", 2)
+            
+    print("This is the end.")
 
 def procedure_Rn():
     print(tokens[0].content)
@@ -332,7 +348,7 @@ def procedure_Rn():
             print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
             exit(1)
             
-    else:
+    else:                               ## I think this should come first
         if tokens[0].content in pseudo_keywords:
             print(f"Rn -> {tokens[0].content}")
             read(tokens[0])
@@ -364,7 +380,7 @@ def procedure_Da():
     n = 0
     
     while tokens[0].content == "and":
-        n += 1
+        n += 1                     # Does not this change?
         read(tokens[0])
         tokens.pop(0)
         procedure_Dr()
@@ -388,7 +404,7 @@ def procedure_Dr():                             # Not sure
         print("Dr -> Db")
         procedure_Db()
         
-        
+    ## This one may have to be changed.   
 def procedure_Db():
   #  print(tokens[0].type)
     if tokens[0].content == "(":
@@ -538,15 +554,21 @@ def procedure_Vl():
 file_name = input()
 tokens = screen(file_name)
 
-'''
+
 try:
     procedure_E()
 except:
     pass
-    '''
     
-procedure_E()
+    
+#procedure_E()
 
 #for node in stack:
-   # print(node.children)
+#   print(node.content)
 #print_tree(stack[0])
+
+for child in stack:
+   print(child.content) 
+   
+   
+#print(stack[0].children[0].content)

@@ -44,4 +44,10 @@ keyword list
 
 why did not where become a keyword?
 
-whre is ll2?
+where is ll2 grammar used?
+
+tokens.pop[0] inside read
+
+do spaces inside strings get ignored?
+
+210314 as three integers
