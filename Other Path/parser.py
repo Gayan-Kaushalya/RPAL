@@ -1,7 +1,6 @@
-import sys
 from screener import screen
 
-from ds_tokenizer import *
+#from ds_tokenizer import *
 
 class Stack:
     def __init__(self):
@@ -57,25 +56,26 @@ class Parser:
         self.tokens = tokens
         self.pos = 0
         self.next_token = self.tokens[0] # initializing the first token as 0th
-
+    '''
     def stripDel(self):
 
         while self.pos < (len(self.tokens) -1) and  ((self.tokens[self.pos].type) == "<DELETE>" or (self.tokens[self.pos].type) == "<COMMENT>"):
             self.pos+=1
             self.next_token = self.tokens[self.pos]
-
+    '''
     def read(self, expected_token):
         # print("Reading ", expected_token)
-        self.stripDel()
+      #  self.stripDel()
 
         if self.next_token.content != expected_token:
             print(f"Error: Expected {expected_token} but got {self.next_token.content}")
-            sys.exit()
+            exit(1)
         self.pos+=1
         if self.pos < len(self.tokens):
             self.next_token = self.tokens[self.pos]
+      #  tokens.pop(0)
 
-        self.stripDel()
+      #  self.stripDel()
 
         # print("Next Token", self.next_token)
         
@@ -338,7 +338,7 @@ class Parser:
                 Tree("@", 3)
             else:
                 print(f"Error: Expected an identifier but got {self.next_token.content}")
-                sys.exit()
+                exit(1)
             
         # print("Returning from Ap")        
 
@@ -399,7 +399,7 @@ class Parser:
             Tree("str :"+ val, 0)
         else:
             print(f"Error: Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got {self.next_token.content}")
-            sys.exit()
+            exit(1)
         # print("Returning from Rn")
 
     def D(self):
@@ -510,7 +510,7 @@ class Parser:
                 self.read(")")
         else:
             print(f"Error: Expected an identifier or  '(' but got {self.next_token.content}")
-            sys.exit()
+            exit(1)
         # print("Returning from Vb")
 
     def Vl(self):
@@ -545,7 +545,7 @@ for token in tokens:
     print(token[0], token[1])
     '''
 P = Parser(tokens)
-P.stripDel()
+#P.stripDel()
 P.E()
 Tree.call_tree()
     
