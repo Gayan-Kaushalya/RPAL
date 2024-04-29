@@ -1,42 +1,39 @@
 from screener import screen
 from stack import Stack
+from node import Node
 
-#from ds_tokenizer import *
+# A stack containing nodes
+stack = Stack()
 
-
-
-class Tree:
-    # a stack containing nodes
-    node_stack = Stack()
-
-    def __init__(self, value, num_children):
-        self.value = value
-        self.num_children = num_children
-        self.children = [None] * num_children
-        # print("\nTREE BUILT\n", value, num_children)
-        self.build_tree()
-
-    def build_tree(self):
-        for i in range (self.num_children-1, -1,-1): #i = 5 4 3 2 1 0 for 6 children
-            if Tree.node_stack.is_empty():
-                print("Can't ")
-            self.children[i] = Tree.node_stack.pop()
-        Tree.node_stack.push(self)
-    def call_tree():
-        if not Tree.node_stack.is_empty():
-            root = Tree.node_stack.pop()
-            preorder_traversal(root)
-        else:
-            print("Tree is empty")
-
-def preorder_traversal(root, level=0):
+def build_tree(value, num_children):
+    node = Node(value)
+    node.children = [None] * num_children
+    
+    for i in range (num_children - 1, -1, -1): #i = 5 4 3 2 1 0 for 6 children
+        if stack.is_empty():
+            print("Can't build tree, stack is empty")
+        node.children[i] = stack.pop()
+    stack.push(node)
+    
+def print_tree():
+    if not stack.is_empty():
+        root = stack.pop()
+        preorder_traversal(root)
+    else:
+        print("Tree is empty")
+ 
+def preorder_traversal(root):
     if root is None:
         return
 
-    print("." * level, root.value)
+    if root.level == 0:
+        print(root.value)
+    else:
+        print("." * root.level, root.value)
 
     for child in root.children:
-        preorder_traversal(child, level + 1)  # Recursively traverse each child node with increased level
+        child.level = root.level + 1
+        preorder_traversal(child)  # Recursively traverse each child node with increased level
 
 class Parser:
     def __init__(self, tokens):
@@ -77,7 +74,7 @@ class Parser:
             self.D()
             self.read("in")
             self.E()
-            Tree("let", 2)   #decide the number of children 3
+            build_tree("let", 2)   #decide the number of children 3
         elif self.next_token.content == "fn":
             self.read("fn")
             n = 0
@@ -88,7 +85,7 @@ class Parser:
                 n += 1
             self.read(".")
             self.E()
-            Tree("lambda", n+1 )  #decide the number of children 4
+            build_tree("lambda", n+1 )  #decide the number of children 4
         else:
             self.Ew()
         # print("Returning from E")
@@ -102,7 +99,7 @@ class Parser:
         if self.next_token.content == "where":
             self.read("where")
             self.Dr()
-            Tree("where", 2)  #decide the number of children 5
+            build_tree("where", 2)  #decide the number of children 5
         # print("Returning from Ew")
     
     def T(self):
@@ -120,7 +117,7 @@ class Parser:
                 self.read(",")
                 self.Ta()
                 n+=1
-            Tree("tau", n+1) #decide the number of children 6
+            build_tree("tau", n+1) #decide the number of children 6
         # print("Returning from T")
 
     def Ta(self):
@@ -136,7 +133,7 @@ class Parser:
         while self.next_token.content == "aug":
             self.read("aug")
             self.Tc()
-            Tree("aug", 2)  #decide the number of children 7
+            build_tree("aug", 2)  #decide the number of children 7
         # print("Returning from Ta")
 
     def Tc(self):
@@ -153,7 +150,7 @@ class Parser:
             self.Tc()
             self.read("|")
             self.Tc()
-            Tree("->", 3)
+            build_tree("->", 3)
         # print("Returning from Tc")
 
     def B(self):
@@ -168,7 +165,7 @@ class Parser:
         while self.next_token.content == "or":
             self.read("or")
             self.Bt()
-            Tree("or", 2)  #decide the number of children 9
+            build_tree("or", 2)  #decide the number of children 9
         # print("Returning from B")
 
     def Bt(self):
@@ -183,7 +180,7 @@ class Parser:
         while self.next_token.content == "&":
             self.read("&")
             self.Bs()
-            Tree("&", 2)
+            build_tree("&", 2)
         # print("Returning from Bt")
 
     def Bs(self):
@@ -195,7 +192,7 @@ class Parser:
         if self.next_token.content == "not":
             self.read("not")
             self.Bp()
-            Tree("not", 1)
+            build_tree("not", 1)
         else:
             self.Bp()
         # print("Returning from Bs")
@@ -215,27 +212,27 @@ class Parser:
         if self.next_token.content == "gr" or self.next_token.content == ">":
             self.read(self.next_token.content)
             self.A()
-            Tree("gr", 2)
+            build_tree("gr", 2)
         elif self.next_token.content == "ge" or self.next_token.content == ">=":
             self.read(self.next_token.content)
             self.A()
-            Tree("ge", 2)
+            build_tree("ge", 2)
         elif self.next_token.content == "ls" or self.next_token.content == "<":
             self.read(self.next_token.content)
             self.A()
-            Tree("ls", 2)
+            build_tree("ls", 2)
         elif self.next_token.content == "le" or self.next_token.content == "<=":
             self.read(self.next_token.content)
             self.A()
-            Tree("le", 2)
+            build_tree("le", 2)
         elif self.next_token.content == "eq":
             self.read("eq")
             self.A()
-            Tree("eq", 2)
+            build_tree("eq", 2)
         elif self.next_token.content == "ne":
             self.read("ne")
             self.A()
-            Tree("ne", 2)
+            build_tree("ne", 2)
         # other values should not be passed from this
         # print("Returning from Bp")
 
@@ -256,18 +253,18 @@ class Parser:
         elif self.next_token.content=="-":
             self.read("-")
             self.At()
-            Tree("neg", 1)
+            build_tree("neg", 1)
         else:
             self.At()
         while self.next_token.content == "+" or self.next_token.content == "-":
             if self.next_token.content=="+":
                 self.read("+")
                 self.At()
-                Tree("+", 2)
+                build_tree("+", 2)
             elif self.next_token.content=="-":
                 self.read("-")
                 self.At()
-                Tree("-", 2)
+                build_tree("-", 2)
         # print("Returning from A")
 
     def At(self):
@@ -284,11 +281,11 @@ class Parser:
             if self.next_token.content=="*":
                 self.read("*")
                 self.Af()
-                Tree("*", 2)
+                build_tree("*", 2)
             elif self.next_token.content=="/":
                 self.read("/")
                 self.Af()
-                Tree("/", 2)
+                build_tree("/", 2)
         # print("Returning from At")
 
     def Af(self):
@@ -303,7 +300,7 @@ class Parser:
         if self.next_token.content == "**":
             self.read("**")
             self.Af()
-            Tree("**", 2)
+            build_tree("**", 2)
         # print("Returning from Af")
         
     def Ap(self):
@@ -322,7 +319,7 @@ class Parser:
             if self.next_token.type == "<IDENTIFIER>":
                 self.read(self.next_token.content)
                 self.R()
-                Tree("@", 3)
+                build_tree("@", 3)
             else:
                 print(f"Error: Expected an identifier but got {self.next_token.content}")
                 exit(1)
@@ -340,7 +337,7 @@ class Parser:
         self.Rn()
         while self.next_token.type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or self.next_token.content in ["true", "false","nil", "(", "dummy"]: # check if the next token is in the first set of Rn
             self.Rn()
-            Tree("gamma", 2)
+            build_tree("gamma", 2)
         # print("Returning from R")
 
     def Rn(self):
@@ -357,16 +354,16 @@ class Parser:
         # print("parsing in Rn", self.next_token)
         if self.next_token.content == "true":
             self.read("true")
-            Tree("true", 0)
+            build_tree("true", 0)
         elif self.next_token.content == "false":
             self.read("false")
-            Tree("false", 0)
+            build_tree("false", 0)
         elif self.next_token.content == "nil":
             self.read("nil")
-            Tree("nil", 0)
+            build_tree("nil", 0)
         elif self.next_token.content == "dummy":
             self.read("dummy")
-            Tree("dummy", 0)
+            build_tree("dummy", 0)
         elif self.next_token.content == "(":
             self.read("(")
             self.E()
@@ -375,15 +372,15 @@ class Parser:
         elif self.next_token.type == "<IDENTIFIER>":
             val = self.next_token.content
             self.read(self.next_token.content)
-            Tree("id :"+ val, 0)
+            build_tree("id :"+ val, 0)
         elif self.next_token.type == "<INTEGER>":
             val = self.next_token.content
             self.read(self.next_token.content)
-            Tree("int :"+ val, 0)
+            build_tree("int :"+ val, 0)
         elif self.next_token.type == "<STRING>":
             val = self.next_token.content
             self.read(self.next_token.content)
-            Tree("str :"+ val, 0)
+            build_tree("str :"+ val, 0)
         else:
             print(f"Error: Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got {self.next_token.content}")
             exit(1)
@@ -399,7 +396,7 @@ class Parser:
         if self.next_token.content == "within":
             self.read("within")
             self.D()
-            Tree("within", 2)
+            build_tree("within", 2)
         # print("Returning from D")
 
     def Da(self):
@@ -415,7 +412,7 @@ class Parser:
             self.Dr()
             n+=1
         if n>0:  # check if there are more than one 'and' in the input
-            Tree("and", n+1)
+            build_tree("and", n+1)
         # print("Returning from Da")
 
     def Dr(self):
@@ -427,7 +424,7 @@ class Parser:
         if self.next_token.content == "rec":
             self.read("rec")
             self.Db()
-            Tree("rec", 1)
+            build_tree("rec", 1)
         else:
             self.Db()
         # print("Returning from Dr")
@@ -448,13 +445,13 @@ class Parser:
         elif self.next_token.type == "<IDENTIFIER>":
             val = self.next_token.content
             self.read(self.next_token.content)
-            Tree(val,0)
+            build_tree(val,0)
 
             if self.next_token.content=="," or self.next_token.content == "=":  #checking if this should go through vl
                 self.Vl()
                 self.read("=")
                 self.E()
-                Tree("=", 2)
+                build_tree("=", 2)
             
             else: # going through Vb path
                 n=0
@@ -466,7 +463,7 @@ class Parser:
                     n+=1
                 self.read("=")
                 self.E()
-                Tree("fcn_form", n+2)
+                build_tree("fcn_form", n+2)
         # else:
         #     self.Vl()
             
@@ -483,16 +480,16 @@ class Parser:
             val = self.next_token.content
             # print(self.next_token)
             self.read(self.next_token.content)
-            Tree(val, 0)
+            build_tree(val, 0)
         elif self.next_token.content == "(":
             self.read("(")
             if self.next_token.content == ")":
                 self.read(")")
-                Tree("()", 0)
+                build_tree("()", 0)
             elif self.next_token.type == "<IDENTIFIER>": #first set of Vl
                 val = self.next_token.content
                 self.read(self.next_token.content)
-                Tree(val,0)
+                build_tree(val,0)
                 self.Vl()
                 self.read(")")
         else:
@@ -511,12 +508,12 @@ class Parser:
             if self.next_token.type == "<IDENTIFIER>":
                 val = self.next_token.content
                 self.read(self.next_token.content)
-                Tree(val,0)
+                build_tree(val,0)
                 n+=1
             else:
                 print("Error from Vl")
         if n>0:
-            Tree(",", n+1) 
+            build_tree(",", n+1) 
         # print("Returning from Vl")
 
 
@@ -534,14 +531,4 @@ for token in tokens:
 P = Parser(tokens)
 #P.stripDel()
 P.E()
-Tree.call_tree()
-    
-    # prog_file = sys.argv[1]
-
-    # LE = LexicalAnalyser(prog_file)
-    # tokens = LE.lexical_analyser()
-    # # for token in tokens:
-    # #     print(token[0], token[1])
-    # P=Parser(tokens) 
-    # P.E()
-    # Tree.call_tree()
+print_tree()
