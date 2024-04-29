@@ -3,8 +3,9 @@ from lexical_analyzer import tokenize
 keywords = [
     "let",
     "in",
-    "Print"
-    "where"
+ #   "Print",         ## Is this a keyword?
+    "where",
+    "rec"
 ]
 
 characters = []
@@ -72,6 +73,8 @@ def screen(file_name):
 file = input()
 token_list = screen(file)
 #print(len(token_list))
-for token in token_list:
-    print(token)
-    '''
+
+with open("outputrttr.txt", "w") as file:
+    for token in token_list:
+        file.write(f"{token.content} {token.type}\n")
+        '''
