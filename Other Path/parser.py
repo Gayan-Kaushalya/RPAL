@@ -535,12 +535,12 @@ class Parser:
 
 
 prog_file = input()
-#tokens = screen(prog_file)
+tokens = screen(prog_file)
 
-#'''
+'''
 LE = LexicalAnalyser(prog_file)
 tokens = LE.lexical_analyser()
-'''
+
 for token in tokens:
     print(token[0], token[1])
     '''
@@ -558,4 +558,3 @@ Tree.call_tree()
     # P=Parser(tokens) 
     # P.E()
     # Tree.call_tree()
-

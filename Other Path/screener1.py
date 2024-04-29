@@ -1,39 +1,24 @@
-from lexical_analyzer import tokenize
+from ds_tokenizer import *
 
 keywords = [
     "let",
     "in",
  #   "Print",         ## Is this a keyword?
     "where",
-    "rec",
-    "fn" ,          ## Not sure
-    "aug"
-    "or",
-    "not",
-    "gr",
-    "ge",
-    "ls",
-    "le",
-    "eq",
-    "ne",
-    "true",
-    "false",
-    "nil",
-    "dummy",
-    "within",
-    "and"
+    "rec"
 ]
 
 characters = []
 
-def screen(file_name):
-    token_list = []
+def screen1(file_name):
+ #   token_list = []
     try:
         with open(file_name, 'r') as file:
             for line in file:
                 for character in line:
                     characters.append(character)
-            token_list = tokenize(characters)
+            la = LexicalAnalyser(file_name)
+            token_list = la.lexical_analyser()
             characters.clear()
     except FileNotFoundError:
         print("File not found.")
@@ -75,12 +60,13 @@ def screen(file_name):
             token.make_keyword()
         
         if token.type == "<DELETE>" or token.content == "\n":
+            '''
             if i < len(token_list) - 1:
                 token_list[i + 1].previous_type = token.previous_type
             
             if i > 0:
                 token_list[i - 1].next_type = token.next_type
-            
+            '''
             token_list.remove(token)
 
     return token_list

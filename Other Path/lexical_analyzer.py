@@ -135,7 +135,7 @@ def tokenize(characters):
             elif characters[i] in punctuation:
                 current_token += characters[i]
                 tokens.append(current_token)
-                token_names.append('<PUNCT>')
+                token_names.append(current_token)
                 line_numbers.append(line_number)
                 
                 current_token = '' 
