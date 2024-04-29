@@ -31,51 +31,56 @@ def read(expected_token):
     if not tokens[0].is_last_token:
         del tokens[0]   
 
- 
 def parse(tokens):
-    E()
+    procedure_E()
     print_tree()
  
-def E():
-    """E->'let' D 'in' E    => 'let'
-        -> 'fn'  Vb+ '.' E  => 'lambda'
-        ->  Ew;
-    """
-    # print("parsing in E", tokens[0])
+def procedure_E():
+    # E -> 'let' D 'in' E   => 'let'
+    #   -> 'fn'  Vb+ '.' E  => 'lambda'
+    #   ->  Ew;
+    
     if tokens[0].content == "let":
         read("let")
-        D()
-        read("in")
-        E()
-        build_tree("let", 2)   #decide the number of children 3
+        procedure_D()
+        
+        if tokens[0].content == "in":
+            read("in")
+            procedure_E()
+            build_tree("let", 2)
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected 'in' but got " + str(tokens[0].content))
+            exit(1)
+     
+    # The fn function is not sure   
     elif tokens[0].content == "fn":
         read("fn")
         n = 0
-        Vb()
+        procedure_Vb()
         n += 1
         while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(": # first set of Vb ->[ <IDENTIFIER> , '(' ]
-            Vb()
+            procedure_Vb()
             n += 1
         read(".")
-        E()
-        build_tree("lambda", n+1 )  #decide the number of children 4
+        procedure_E()
+        build_tree("lambda", n + 1)  
+        
     else:
-        Ew()
-    # print("Returning from E")
+        procedure_Ew()
 
-def Ew():
-    """ Ew-> T 'where' Dr    => 'where'
-            -> T;
-    """
-    # print("parsing in Ew", tokens[0])
-    T()
+##############################################################
+def procedure_Ew():
+    # Ew -> T 'where' Dr    => 'where'
+    #    -> T;
+    
+    procedure_T()
     if tokens[0].content == "where":
         read("where")
-        Dr()
-        build_tree("where", 2)  #decide the number of children 5
-    # print("Returning from Ew")
-
-def T():
+        procedure_Dr()
+        build_tree("where", 2)  
+        
+##############################################################
+def procedure_T():
     """ 
     T   -> Ta (','  Ta)+    => 'tau'
         -> Ta;
@@ -339,7 +344,7 @@ def Rn():
         build_tree("dummy", 0)
     elif tokens[0].content == "(":
         read("(")
-        E()
+        procedure_E()
         read(")")
     # for other Identifier tokens
     elif tokens[0].type == "<IDENTIFIER>":
@@ -359,7 +364,7 @@ def Rn():
         exit(1)
     # print("Returning from Rn")
 
-def D():
+def procedure_D():
     """
     D   -> Da 'within' D    => 'within'
         -> Da;
@@ -368,7 +373,7 @@ def D():
     Da()
     if tokens[0].content == "within":
         read("within")
-        D()
+        procedure_D()
         build_tree("within", 2)
     # print("Returning from D")
 
@@ -378,17 +383,17 @@ def Da():
         -> Dr;
     """
     # print("parsing in Da", tokens[0])
-    Dr()
+    procedure_Dr()
     n=0
     while tokens[0].content == "and":
         read("and")
-        Dr()
+        procedure_Dr()
         n+=1
     if n>0:  # check if there are more than one 'and' in the input
         build_tree("and", n+1)
     # print("Returning from Da")
 
-def Dr():
+def procedure_Dr():
     """
     Dr  -> 'rec' Db    => 'rec'
         -> Db;
@@ -411,7 +416,7 @@ def Db():
     # print("parsing in Db", tokens[0])
     if tokens[0].content == "(":
         read("(")
-        D()
+        procedure_D()
         read(")")
 
 
@@ -423,26 +428,26 @@ def Db():
         if tokens[0].content=="," or tokens[0].content == "=":  #checking if this should go through vl
             Vl()
             read("=")
-            E()
+            procedure_E()
             build_tree("=", 2)
         
         else: # going through Vb path
             n=0
-            Vb()
+            procedure_Vb()
             n+=1
             while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(":  # check if the next token is in the first set of Vb
                 read(tokens[0].content)
-                Vb()
+                procedure_Vb()
                 n+=1
             read("=")
-            E()
+            procedure_E()
             build_tree("fcn_form", n+2)
     # else:
     #     Vl()
         
     # print("Returning from Db")
 
-def Vb(): 
+def procedure_Vb(): 
     """
     Vb -> <identifier>
         -> '(' Vl ')'

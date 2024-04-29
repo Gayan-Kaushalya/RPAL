@@ -51,3 +51,7 @@ tokens.pop[0] inside read
 do spaces inside strings get ignored?
 
 210314 as three integers
+
+error handling sentences are not correct
+
+fn part in E()

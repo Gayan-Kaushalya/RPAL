@@ -41,7 +41,6 @@ def read(token):
     
     
 def build_tree(content, num_children):
-    # Need some code to ensure correnct operation = a print function
     
     node = Node(content)
     
