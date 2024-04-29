@@ -34,7 +34,6 @@ def read(expected_token):
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
-     #   position = 0
         tokens[0] = self.tokens[0] # initializing the first token as 0th
 
     
