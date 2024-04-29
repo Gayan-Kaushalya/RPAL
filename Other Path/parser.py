@@ -1,10 +1,11 @@
 from screener import screen
 from stack import Stack
-from node import Node
+from node import *
 
 # A stack containing nodes
 stack = Stack()
 
+# Try to change this function
 def build_tree(value, num_children):
     node = Node(value)
     node.children = [None] * num_children
@@ -22,68 +23,44 @@ def print_tree():
     else:
         print("Tree is empty")
  
-def preorder_traversal(root):
-    if root is None:
-        return
-
-    if root.level == 0:
-        print(root.value)
-    else:
-        print("." * root.level, root.value)
-
-    for child in root.children:
-        child.level = root.level + 1
-        preorder_traversal(child)  # Recursively traverse each child node with increased level
+def read(expected_token):
+    if tokens[0].content != expected_token:
+        print(f"Error: Expected {expected_token} but got {tokens[0].content}")
+        exit(1)
+     
+    if not tokens[0].is_last_token:
+        del tokens[0]   
 
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.pos = 0
-        self.next_token = self.tokens[0] # initializing the first token as 0th
-    '''
-    def stripDel(self):
+     #   position = 0
+        tokens[0] = self.tokens[0] # initializing the first token as 0th
 
-        while self.pos < (len(self.tokens) -1) and  ((self.tokens[self.pos].type) == "<DELETE>" or (self.tokens[self.pos].type) == "<COMMENT>"):
-            self.pos+=1
-            self.next_token = self.tokens[self.pos]
-    '''
-    def read(self, expected_token):
-        # print("Reading ", expected_token)
-      #  self.stripDel()
+    
 
-        if self.next_token.content != expected_token:
-            print(f"Error: Expected {expected_token} but got {self.next_token.content}")
-            exit(1)
-        self.pos+=1
-        if self.pos < len(self.tokens):
-            self.next_token = self.tokens[self.pos]
-      #  tokens.pop(0)
-
-      #  self.stripDel()
-
-        # print("Next Token", self.next_token)
         
     def E(self):
         """E->'let' D 'in' E    => 'let'
             -> 'fn'  Vb+ '.' E  => 'lambda'
             ->  Ew;
         """
-        # print("parsing in E", self.next_token)
-        if self.next_token.content == "let":
-            self.read("let")
+        # print("parsing in E", tokens[0])
+        if tokens[0].content == "let":
+            read("let")
             self.D()
-            self.read("in")
+            read("in")
             self.E()
             build_tree("let", 2)   #decide the number of children 3
-        elif self.next_token.content == "fn":
-            self.read("fn")
+        elif tokens[0].content == "fn":
+            read("fn")
             n = 0
             self.Vb()
             n += 1
-            while self.next_token.type == "<IDENTIFIER>" or self.next_token.type == "(": # first set of Vb ->[ <IDENTIFIER> , '(' ]
+            while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(": # first set of Vb ->[ <IDENTIFIER> , '(' ]
                 self.Vb()
                 n += 1
-            self.read(".")
+            read(".")
             self.E()
             build_tree("lambda", n+1 )  #decide the number of children 4
         else:
@@ -94,10 +71,10 @@ class Parser:
         """ Ew-> T 'where' Dr    => 'where'
                 -> T;
         """
-        # print("parsing in Ew", self.next_token)
+        # print("parsing in Ew", tokens[0])
         self.T()
-        if self.next_token.content == "where":
-            self.read("where")
+        if tokens[0].content == "where":
+            read("where")
             self.Dr()
             build_tree("where", 2)  #decide the number of children 5
         # print("Returning from Ew")
@@ -109,12 +86,12 @@ class Parser:
         -------------------------------
         T -> Ta (',' Ta)*
         """
-        # print("parsing in T", self.next_token)
+        # print("parsing in T", tokens[0])
         self.Ta()
-        if self.next_token.content == ",":
+        if tokens[0].content == ",":
             n=0
-            while self.next_token.content == ",":
-                self.read(",")
+            while tokens[0].content == ",":
+                read(",")
                 self.Ta()
                 n+=1
             build_tree("tau", n+1) #decide the number of children 6
@@ -128,10 +105,10 @@ class Parser:
         Ta -> Tc ('aug' Tc)*
         
         """
-        # print("parsing in Ta", self.next_token)
+        # print("parsing in Ta", tokens[0])
         self.Tc()
-        while self.next_token.content == "aug":
-            self.read("aug")
+        while tokens[0].content == "aug":
+            read("aug")
             self.Tc()
             build_tree("aug", 2)  #decide the number of children 7
         # print("Returning from Ta")
@@ -143,12 +120,12 @@ class Parser:
         --------------------------------
         Tc -> B (   |  '->' Tc '|' Tc)
         """
-        # print("parsing in Tc", self.next_token)
+        # print("parsing in Tc", tokens[0])
         self.B()
-        if self.next_token.content == "->":
-            self.read("->")
+        if tokens[0].content == "->":
+            read("->")
             self.Tc()
-            self.read("|")
+            read("|")
             self.Tc()
             build_tree("->", 3)
         # print("Returning from Tc")
@@ -160,10 +137,10 @@ class Parser:
         --------------------------------
         B -> Bt ('or' Bt)*
         """
-        # print("parsing in B", self.next_token)
+        # print("parsing in B", tokens[0])
         self.Bt()
-        while self.next_token.content == "or":
-            self.read("or")
+        while tokens[0].content == "or":
+            read("or")
             self.Bt()
             build_tree("or", 2)  #decide the number of children 9
         # print("Returning from B")
@@ -175,10 +152,10 @@ class Parser:
         --------------------------------
         Bt -> Bs ('&' Bs)*
         """
-        # print("parsing in Bt", self.next_token)
+        # print("parsing in Bt", tokens[0])
         self.Bs()
-        while self.next_token.content == "&":
-            self.read("&")
+        while tokens[0].content == "&":
+            read("&")
             self.Bs()
             build_tree("&", 2)
         # print("Returning from Bt")
@@ -188,9 +165,9 @@ class Parser:
         Bs  -> 'not' Bp    => 'not'
             -> Bp;
         """
-        # print("parsing in Bs", self.next_token)
-        if self.next_token.content == "not":
-            self.read("not")
+        # print("parsing in Bs", tokens[0])
+        if tokens[0].content == "not":
+            read("not")
             self.Bp()
             build_tree("not", 1)
         else:
@@ -207,30 +184,30 @@ class Parser:
             -> A 'ne' A             => 'ne'
             -> A;
         """
-        # print("parsing in Bp", self.next_token)
+        # print("parsing in Bp", tokens[0])
         self.A()
-        if self.next_token.content == "gr" or self.next_token.content == ">":
-            self.read(self.next_token.content)
+        if tokens[0].content == "gr" or tokens[0].content == ">":
+            read(tokens[0].content)
             self.A()
             build_tree("gr", 2)
-        elif self.next_token.content == "ge" or self.next_token.content == ">=":
-            self.read(self.next_token.content)
+        elif tokens[0].content == "ge" or tokens[0].content == ">=":
+            read(tokens[0].content)
             self.A()
             build_tree("ge", 2)
-        elif self.next_token.content == "ls" or self.next_token.content == "<":
-            self.read(self.next_token.content)
+        elif tokens[0].content == "ls" or tokens[0].content == "<":
+            read(tokens[0].content)
             self.A()
             build_tree("ls", 2)
-        elif self.next_token.content == "le" or self.next_token.content == "<=":
-            self.read(self.next_token.content)
+        elif tokens[0].content == "le" or tokens[0].content == "<=":
+            read(tokens[0].content)
             self.A()
             build_tree("le", 2)
-        elif self.next_token.content == "eq":
-            self.read("eq")
+        elif tokens[0].content == "eq":
+            read("eq")
             self.A()
             build_tree("eq", 2)
-        elif self.next_token.content == "ne":
-            self.read("ne")
+        elif tokens[0].content == "ne":
+            read("ne")
             self.A()
             build_tree("ne", 2)
         # other values should not be passed from this
@@ -246,23 +223,23 @@ class Parser:
         --------------------------------
         A -> ( '+' At | '-' At | At ) ( '+' At | '-' At)*
         """
-        # print("parsing in A", self.next_token)
-        if self.next_token.content=="+":
-            self.read("+")
+        # print("parsing in A", tokens[0])
+        if tokens[0].content=="+":
+            read("+")
             self.At()
-        elif self.next_token.content=="-":
-            self.read("-")
+        elif tokens[0].content=="-":
+            read("-")
             self.At()
             build_tree("neg", 1)
         else:
             self.At()
-        while self.next_token.content == "+" or self.next_token.content == "-":
-            if self.next_token.content=="+":
-                self.read("+")
+        while tokens[0].content == "+" or tokens[0].content == "-":
+            if tokens[0].content=="+":
+                read("+")
                 self.At()
                 build_tree("+", 2)
-            elif self.next_token.content=="-":
-                self.read("-")
+            elif tokens[0].content=="-":
+                read("-")
                 self.At()
                 build_tree("-", 2)
         # print("Returning from A")
@@ -275,15 +252,15 @@ class Parser:
         --------------------------------
         At -> Af (* Af | / Af)*
         """
-        # print("parsing in At", self.next_token)
+        # print("parsing in At", tokens[0])
         self.Af()
-        while self.next_token.content == "*" or self.next_token.content == "/":
-            if self.next_token.content=="*":
-                self.read("*")
+        while tokens[0].content == "*" or tokens[0].content == "/":
+            if tokens[0].content=="*":
+                read("*")
                 self.Af()
                 build_tree("*", 2)
-            elif self.next_token.content=="/":
-                self.read("/")
+            elif tokens[0].content=="/":
+                read("/")
                 self.Af()
                 build_tree("/", 2)
         # print("Returning from At")
@@ -295,10 +272,10 @@ class Parser:
         ------------------------
         Af -> Ap (    | ** Af)
         """
-        # print("parsing in Af", self.next_token)
+        # print("parsing in Af", tokens[0])
         self.Ap()
-        if self.next_token.content == "**":
-            self.read("**")
+        if tokens[0].content == "**":
+            read("**")
             self.Af()
             build_tree("**", 2)
         # print("Returning from Af")
@@ -311,17 +288,17 @@ class Parser:
         Ap -> R ( @ identifier R)*
             
         """
-        # print("parsing in Ap", self.next_token)
+        # print("parsing in Ap", tokens[0])
         self.R()
-        while self.next_token.content == "@":
-            self.read("@")
+        while tokens[0].content == "@":
+            read("@")
             # check if the next token is an identifier
-            if self.next_token.type == "<IDENTIFIER>":
-                self.read(self.next_token.content)
+            if tokens[0].type == "<IDENTIFIER>":
+                read(tokens[0].content)
                 self.R()
                 build_tree("@", 3)
             else:
-                print(f"Error: Expected an identifier but got {self.next_token.content}")
+                print(f"Error: Expected an identifier but got {tokens[0].content}")
                 exit(1)
             
         # print("Returning from Ap")        
@@ -333,9 +310,9 @@ class Parser:
         -------------
         R -> Rn+
         """
-        # print("parsing in R", self.next_token)
+        # print("parsing in R", tokens[0])
         self.Rn()
-        while self.next_token.type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or self.next_token.content in ["true", "false","nil", "(", "dummy"]: # check if the next token is in the first set of Rn
+        while tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: # check if the next token is in the first set of Rn
             self.Rn()
             build_tree("gamma", 2)
         # print("Returning from R")
@@ -351,38 +328,38 @@ class Parser:
             -> '(' E ')'
             -> 'dummy'      => 'dummy';
         """
-        # print("parsing in Rn", self.next_token)
-        if self.next_token.content == "true":
-            self.read("true")
+        # print("parsing in Rn", tokens[0])
+        if tokens[0].content == "true":
+            read("true")
             build_tree("true", 0)
-        elif self.next_token.content == "false":
-            self.read("false")
+        elif tokens[0].content == "false":
+            read("false")
             build_tree("false", 0)
-        elif self.next_token.content == "nil":
-            self.read("nil")
+        elif tokens[0].content == "nil":
+            read("nil")
             build_tree("nil", 0)
-        elif self.next_token.content == "dummy":
-            self.read("dummy")
+        elif tokens[0].content == "dummy":
+            read("dummy")
             build_tree("dummy", 0)
-        elif self.next_token.content == "(":
-            self.read("(")
+        elif tokens[0].content == "(":
+            read("(")
             self.E()
-            self.read(")")
+            read(")")
         # for other Identifier tokens
-        elif self.next_token.type == "<IDENTIFIER>":
-            val = self.next_token.content
-            self.read(self.next_token.content)
+        elif tokens[0].type == "<IDENTIFIER>":
+            val = tokens[0].content
+            read(tokens[0].content)
             build_tree("id :"+ val, 0)
-        elif self.next_token.type == "<INTEGER>":
-            val = self.next_token.content
-            self.read(self.next_token.content)
+        elif tokens[0].type == "<INTEGER>":
+            val = tokens[0].content
+            read(tokens[0].content)
             build_tree("int :"+ val, 0)
-        elif self.next_token.type == "<STRING>":
-            val = self.next_token.content
-            self.read(self.next_token.content)
+        elif tokens[0].type == "<STRING>":
+            val = tokens[0].content
+            read(tokens[0].content)
             build_tree("str :"+ val, 0)
         else:
-            print(f"Error: Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got {self.next_token.content}")
+            print(f"Error: Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got {tokens[0].content}")
             exit(1)
         # print("Returning from Rn")
 
@@ -391,10 +368,10 @@ class Parser:
         D   -> Da 'within' D    => 'within'
             -> Da;
         """
-        # print("parsing in D", self.next_token)
+        # print("parsing in D", tokens[0])
         self.Da()
-        if self.next_token.content == "within":
-            self.read("within")
+        if tokens[0].content == "within":
+            read("within")
             self.D()
             build_tree("within", 2)
         # print("Returning from D")
@@ -404,11 +381,11 @@ class Parser:
         Da  -> Dr ('and' Da)+    => 'and'
             -> Dr;
         """
-        # print("parsing in Da", self.next_token)
+        # print("parsing in Da", tokens[0])
         self.Dr()
         n=0
-        while self.next_token.content == "and":
-            self.read("and")
+        while tokens[0].content == "and":
+            read("and")
             self.Dr()
             n+=1
         if n>0:  # check if there are more than one 'and' in the input
@@ -420,9 +397,9 @@ class Parser:
         Dr  -> 'rec' Db    => 'rec'
             -> Db;
         """
-        # print("parsing in Dr", self.next_token)
-        if self.next_token.content == "rec":
-            self.read("rec")
+        # print("parsing in Dr", tokens[0])
+        if tokens[0].content == "rec":
+            read("rec")
             self.Db()
             build_tree("rec", 1)
         else:
@@ -435,21 +412,21 @@ class Parser:
             -> <identifier> Vb+ '=' E    => 'fcn_form';
             -> '(' D ')';
         """
-        # print("parsing in Db", self.next_token)
-        if self.next_token.content == "(":
-            self.read("(")
+        # print("parsing in Db", tokens[0])
+        if tokens[0].content == "(":
+            read("(")
             self.D()
-            self.read(")")
+            read(")")
 
 
-        elif self.next_token.type == "<IDENTIFIER>":
-            val = self.next_token.content
-            self.read(self.next_token.content)
+        elif tokens[0].type == "<IDENTIFIER>":
+            val = tokens[0].content
+            read(tokens[0].content)
             build_tree(val,0)
 
-            if self.next_token.content=="," or self.next_token.content == "=":  #checking if this should go through vl
+            if tokens[0].content=="," or tokens[0].content == "=":  #checking if this should go through vl
                 self.Vl()
-                self.read("=")
+                read("=")
                 self.E()
                 build_tree("=", 2)
             
@@ -457,11 +434,11 @@ class Parser:
                 n=0
                 self.Vb()
                 n+=1
-                while self.next_token.type == "<IDENTIFIER>" or self.next_token.type == "(":  # check if the next token is in the first set of Vb
-                    self.read(self.next_token.content)
+                while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(":  # check if the next token is in the first set of Vb
+                    read(tokens[0].content)
                     self.Vb()
                     n+=1
-                self.read("=")
+                read("=")
                 self.E()
                 build_tree("fcn_form", n+2)
         # else:
@@ -475,25 +452,25 @@ class Parser:
             -> '(' Vl ')'
             -> '(' ')'  => '()';
         """
-        # print("parsing in Vb", self.next_token)
-        if self.next_token.type == "<IDENTIFIER>":
-            val = self.next_token.content
-            # print(self.next_token)
-            self.read(self.next_token.content)
+        # print("parsing in Vb", tokens[0])
+        if tokens[0].type == "<IDENTIFIER>":
+            val = tokens[0].content
+            # print(tokens[0])
+            read(tokens[0].content)
             build_tree(val, 0)
-        elif self.next_token.content == "(":
-            self.read("(")
-            if self.next_token.content == ")":
-                self.read(")")
+        elif tokens[0].content == "(":
+            read("(")
+            if tokens[0].content == ")":
+                read(")")
                 build_tree("()", 0)
-            elif self.next_token.type == "<IDENTIFIER>": #first set of Vl
-                val = self.next_token.content
-                self.read(self.next_token.content)
+            elif tokens[0].type == "<IDENTIFIER>": #first set of Vl
+                val = tokens[0].content
+                read(tokens[0].content)
                 build_tree(val,0)
                 self.Vl()
-                self.read(")")
+                read(")")
         else:
-            print(f"Error: Expected an identifier or  '(' but got {self.next_token.content}")
+            print(f"Error: Expected an identifier or  '(' but got {tokens[0].content}")
             exit(1)
         # print("Returning from Vb")
 
@@ -501,13 +478,13 @@ class Parser:
         """
         Vl  -> <identifier> (',' <identifier>)*    => ','?
         """ 
-        # print("parsing in Vl", self.next_token)
+        # print("parsing in Vl", tokens[0])
         n=0
-        while self.next_token.content == ",":
-            self.read(",")
-            if self.next_token.type == "<IDENTIFIER>":
-                val = self.next_token.content
-                self.read(self.next_token.content)
+        while tokens[0].content == ",":
+            read(",")
+            if tokens[0].type == "<IDENTIFIER>":
+                val = tokens[0].content
+                read(tokens[0].content)
                 build_tree(val,0)
                 n+=1
             else:
@@ -521,13 +498,9 @@ class Parser:
 prog_file = input()
 tokens = screen(prog_file)
 
-'''
-LE = LexicalAnalyser(prog_file)
-tokens = LE.lexical_analyser()
 
-for token in tokens:
-    print(token[0], token[1])
-    '''
+tokens[0] = tokens[0]
+
 P = Parser(tokens)
 #P.stripDel()
 P.E()
