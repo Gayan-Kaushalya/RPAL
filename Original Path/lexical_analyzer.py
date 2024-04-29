@@ -227,3 +227,10 @@ def tokenize(characters):
             tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], token_names[i+1])
             
     return tokens
+
+'''
+with open(input(), 'r') as file:
+    characters = file.read()
+    tokens = tokenize(characters)
+    '''
+    
