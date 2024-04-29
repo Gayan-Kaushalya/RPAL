@@ -32,6 +32,10 @@ def read(expected_token):
         del tokens[0]   
 
  
+def parse(tokens):
+    E()
+    print_tree()
+ 
 def E():
     """E->'let' D 'in' E    => 'let'
         -> 'fn'  Vb+ '.' E  => 'lambda'
@@ -489,6 +493,4 @@ def Vl():
 
 prog_file = input()
 tokens = screen(prog_file)
-
-E()
-print_tree()
+parse(tokens)
