@@ -143,21 +143,18 @@ def procedure_B():
 
 ##############################################################
 def procedure_Bt():
-    """
-    Bt  -> Bt '&' Bs    => '&'
-        -> Bs;
-    --------------------------------
-    Bt -> Bs ('&' Bs)*
-    """
-    # print("parsing in Bt", tokens[0])
-    Bs()
+    # Bt -> Bt '&' Bs    
+    #    -> Bs;
+    
+    procedure_Bs()
     while tokens[0].content == "&":
         read("&")
-        Bs()
+        procedure_Bs()
         build_tree("&", 2)
-    # print("Returning from Bt")
+        
+##############################################################
 
-def Bs():
+def procedure_Bs():
     """
     Bs  -> 'not' Bp    => 'not'
         -> Bp;
