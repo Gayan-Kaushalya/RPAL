@@ -84,25 +84,23 @@ def procedure_Ew():
         build_tree("where", 2)  
         
 ##############################################################
-def procedure_T():
-    """ 
-    T   -> Ta (','  Ta)+    => 'tau'
-        -> Ta;
-    -------------------------------
-    T -> Ta (',' Ta)*
-    """
-    # print("parsing in T", tokens[0])
-    Ta()
-    if tokens[0].content == ",":
-        n=0
-        while tokens[0].content == ",":
-            read(",")
-            Ta()
-            n+=1
-        build_tree("tau", n+1) #decide the number of children 6
-    # print("Returning from T")
-
-def Ta():
+def procedure_T(): 
+    # T -> Ta (','  Ta)+ 
+    #   -> Ta;
+    
+    procedure_Ta()
+    
+    n=0
+    while tokens[0].content == ",":
+        read(",")
+        procedure_Ta()
+        n+=1
+        
+    if n > 0:
+        build_tree("tau", n+1)
+        
+##############################################################      
+def procedure_Ta():
     """ 
     Ta  -> Ta 'aug' Tc    => 'aug'
         -> Tc;
