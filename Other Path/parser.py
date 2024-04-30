@@ -329,19 +329,17 @@ def procedure_Rn():    # we can create a variable named tok_type
 
 ##############################################################
 def procedure_D():
-    """
-    D   -> Da 'within' D    => 'within'
-        -> Da
-    """
-    # print("parsing in D", tokens[0])
-    Da()
+    # D -> Da 'within' D   
+    #   -> Da
+    
+    procedure_Da()
     if tokens[0].content == "within":
         read("within")
         procedure_D()
         build_tree("within", 2)
-    # print("Returning from D")
-
-def Da():
+    
+##############################################################
+def procedure_Da():
     """
     Da  -> Dr ('and' Da)+    => 'and'
         -> Dr
