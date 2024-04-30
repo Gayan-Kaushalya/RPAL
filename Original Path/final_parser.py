@@ -301,7 +301,7 @@ def procedure_Da():
     n = 0
     
     while tokens[0].content == "and":
-        n += 1                     # Does not this change?
+        n += 1                     
         read(tokens[0])
         tokens.pop(0)
         procedure_Dr()

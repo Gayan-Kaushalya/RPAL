@@ -340,21 +340,21 @@ def procedure_D():
     
 ##############################################################
 def procedure_Da():
-    """
-    Da  -> Dr ('and' Da)+    => 'and'
-        -> Dr
-    """
-    # print("parsing in Da", tokens[0])
+    # Da -> Dr ('and' Dr)+    
+    #    -> Dr
+    
     procedure_Dr()
-    n=0
+    n = 0
+    
     while tokens[0].content == "and":
         read("and")
         procedure_Dr()
-        n+=1
-    if n>0:  # check if there are more than one 'and' in the input
-        build_tree("and", n+1)
-    # print("Returning from Da")
-
+        n += 1
+        
+    if n > 0:  
+        build_tree("and", n + 1)
+    
+##############################################################
 def procedure_Dr():
     """
     Dr  -> 'rec' Db    => 'rec'
