@@ -166,45 +166,43 @@ def procedure_Bs():
         
 ##############################################################
 def procedure_Bp():
-    """
-    Bp  -> A ('gr' | '>' ) A    => 'gr'
-        -> A ('ge' | '>=' ) A   => 'ge'
-        -> A ('ls' | '<' ) A    => 'ls'
-        -> A ('le' | '<=' ) A   => 'le'
-        -> A 'eq' A             => 'eq'
-        -> A 'ne' A             => 'ne'
-        -> A;
-    """
-    # print("parsing in Bp", tokens[0])
-    A()
+    # Bp -> A ('gr' | '>' ) A   
+    #    -> A ('ge' | '>=' ) A   
+    #    -> A ('ls' | '<' ) A    
+    #    -> A ('le' | '<=' ) A  
+    #    -> A 'eq' A            
+    #    -> A 'ne' A             
+    #    -> A;
+    
+    procedure_A()
+    
     if tokens[0].content == "gr" or tokens[0].content == ">":
         read(tokens[0].content)
-        A()
+        procedure_A()
         build_tree("gr", 2)
     elif tokens[0].content == "ge" or tokens[0].content == ">=":
         read(tokens[0].content)
-        A()
+        procedure_A()
         build_tree("ge", 2)
     elif tokens[0].content == "ls" or tokens[0].content == "<":
         read(tokens[0].content)
-        A()
+        procedure_A()
         build_tree("ls", 2)
     elif tokens[0].content == "le" or tokens[0].content == "<=":
         read(tokens[0].content)
-        A()
+        procedure_A()
         build_tree("le", 2)
     elif tokens[0].content == "eq":
         read("eq")
-        A()
+        procedure_A()
         build_tree("eq", 2)
     elif tokens[0].content == "ne":
         read("ne")
-        A()
+        procedure_A()
         build_tree("ne", 2)
-    # other values should not be passed from this
-    # print("Returning from Bp")
 
-def A():
+##############################################################
+def procedure_A():
     """
     A   -> A '+' At    => '+'
         -> A '-' At    => '-'
