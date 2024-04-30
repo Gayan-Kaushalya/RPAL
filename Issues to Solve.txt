@@ -56,3 +56,5 @@ error handling sentences are not correct
 
 fn part in E()
 problem in T()
+
+Not an issue - Understand about first sets

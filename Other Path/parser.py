@@ -39,7 +39,7 @@ def parse(tokens):
 def procedure_E():
     # E -> 'let' D 'in' E   
     #   -> 'fn'  Vb+ '.' E 
-    #   ->  Ew;
+    #   ->  Ew
     
     if tokens[0].content == "let":
         read("let")
@@ -76,7 +76,7 @@ def procedure_E():
 ##############################################################
 def procedure_Ew():
     # Ew -> T 'where' Dr    
-    #    -> T;
+    #    -> T
     
     procedure_T()
     if tokens[0].content == "where":
@@ -87,7 +87,7 @@ def procedure_Ew():
 ##############################################################
 def procedure_T(): 
     # T -> Ta (','  Ta)+ 
-    #   -> Ta;
+    #   -> Ta
     
     procedure_Ta()
     
@@ -103,7 +103,7 @@ def procedure_T():
 ##############################################################      
 def procedure_Ta():
     # Ta -> Ta 'aug' Tc   
-    #    -> Tc;
+    #    -> Tc
 
     procedure_Tc()
     while tokens[0].content == "aug":
@@ -114,7 +114,7 @@ def procedure_Ta():
 ##############################################################
 def procedure_Tc():
     # Tc -> B '->' Tc '|' Tc
-    #    -> B;
+    #    -> B
 
     procedure_B()
     
@@ -133,7 +133,7 @@ def procedure_Tc():
 ##############################################################
 def procedure_B():
     # B -> B 'or' Bt 
-    #   -> Bt;
+    #   -> Bt
 
     procedure_Bt()
     while tokens[0].content == "or":
@@ -144,7 +144,7 @@ def procedure_B():
 ##############################################################
 def procedure_Bt():
     # Bt -> Bt '&' Bs    
-    #    -> Bs;
+    #    -> Bs
     
     procedure_Bs()
     while tokens[0].content == "&":
@@ -155,7 +155,7 @@ def procedure_Bt():
 ##############################################################
 def procedure_Bs():
     # Bs -> 'not' Bp
-    #    -> Bp;
+    #    -> Bp
     
     if tokens[0].content == "not":
         read("not")
@@ -172,7 +172,7 @@ def procedure_Bp():
     #    -> A ('le' | '<=' ) A  
     #    -> A 'eq' A            
     #    -> A 'ne' A             
-    #    -> A;
+    #    -> A
     
     procedure_A()
     
@@ -207,7 +207,7 @@ def procedure_A():
     #   -> A '-' At  
     #   ->   '+' At
     #   ->   '-' At   
-    #   -> At;
+    #   -> At
 
     if tokens[0].content=="+":
         read("+")
@@ -233,7 +233,7 @@ def procedure_A():
 def procedure_At():
     # At -> At '*' Af   
     #    -> At '/' Af    
-    #    -> Af;
+    #    -> Af
 
     procedure_Af()
     while tokens[0].content in ["*", "/"]:
@@ -249,7 +249,7 @@ def procedure_At():
 ##############################################################
 def procedure_Af():
     # Af -> Ap '**' Af  
-    #    -> Ap;
+    #    -> Ap
     
     procedure_Ap()
     if tokens[0].content == "**":     # Should this be while or if?
@@ -260,7 +260,7 @@ def procedure_Af():
 ##############################################################    
 def procedure_Ap():
     # Ap -> Ap '@' <identifier> R
-    #    -> R;
+    #    -> R
 
     procedure_R()
     while tokens[0].content == "@":
@@ -276,31 +276,25 @@ def procedure_Ap():
     
 ##############################################################
 def procedure_R():
-    """
-    R   -> R Rn    => 'gamma'
-        -> Rn;
-    -------------
-    R -> Rn+
-    """
-    # print("parsing in R", tokens[0])
-    Rn()
-    while tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: # check if the next token is in the first set of Rn
-        Rn()
-        build_tree("gamma", 2)
-    # print("Returning from R")
+    # R -> R Rn   
+    #   -> Rn
 
-def Rn():
-    """
-    Rn  -> <Identifier>
-        -> <Integer>
-        -> <String>
-        -> 'true'       => 'true'
-        -> 'false'      => 'false'
-        -> 'nil'        => 'nil'
-        -> '(' E ')'
-        -> 'dummy'      => 'dummy';
-    """
-    # print("parsing in Rn", tokens[0])
+    procedure_Rn()
+    while tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: 
+        procedure_Rn()
+        build_tree("gamma", 2)
+    
+##############################################################
+def procedure_Rn():
+    # Rn -> <IDENTIFIER>
+    #    -> <INTEGER>
+    #    -> <STRING>
+    #    -> 'true'      
+    #    -> 'false'      
+    #    -> 'nil'      
+    #    -> '(' E ')'
+    #    -> 'dummy'     
+    
     if tokens[0].content == "true":
         read("true")
         build_tree("true", 0)
@@ -338,7 +332,7 @@ def Rn():
 def procedure_D():
     """
     D   -> Da 'within' D    => 'within'
-        -> Da;
+        -> Da
     """
     # print("parsing in D", tokens[0])
     Da()
@@ -351,7 +345,7 @@ def procedure_D():
 def Da():
     """
     Da  -> Dr ('and' Da)+    => 'and'
-        -> Dr;
+        -> Dr
     """
     # print("parsing in Da", tokens[0])
     procedure_Dr()
@@ -367,7 +361,7 @@ def Da():
 def procedure_Dr():
     """
     Dr  -> 'rec' Db    => 'rec'
-        -> Db;
+        -> Db
     """
     # print("parsing in Dr", tokens[0])
     if tokens[0].content == "rec":
@@ -381,8 +375,8 @@ def procedure_Dr():
 def Db():
     """
     Db  -> Vl '=' E    => '='  first set of vl is <identifier>
-        -> <identifier> Vb+ '=' E    => 'fcn_form';
-        -> '(' D ')';
+        -> <identifier> Vb+ '=' E    => 'fcn_form'
+        -> '(' D ')'
     """
     # print("parsing in Db", tokens[0])
     if tokens[0].content == "(":
@@ -422,7 +416,7 @@ def procedure_Vb():
     """
     Vb -> <identifier>
         -> '(' Vl ')'
-        -> '(' ')'  => '()';
+        -> '(' ')'  => '()'
     """
     # print("parsing in Vb", tokens[0])
     if tokens[0].type == "<IDENTIFIER>":
