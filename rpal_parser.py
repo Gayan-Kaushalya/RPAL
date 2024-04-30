@@ -69,6 +69,32 @@ def procedure_E():
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": Expected '.' but got " + str(tokens[0].content))
             exit(1) 
+            
+        '''
+        elif tokens[0].content == "fn":
+            n = 0
+            read(tokens[0])
+            tokens.pop(0)
+            
+            ## Look whether we should call Vb before this
+            while tokens[0].type == "<IDENTIFIER>" or tokens[0].content == "(":
+                procedure_Vb()
+                n += 1
+                
+            if n == 0:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected at least one Vb but got none")
+                exit(1)
+                
+            if tokens[0].content == ".":
+                read(tokens[0])
+                tokens.pop(0)
+                procedure_E()
+                build_tree("lambda", n+1)
+                
+            else:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected '.' but got " + str(tokens[0].content))
+                exit(1)
+        '''
         
     else:
         procedure_Ew()
