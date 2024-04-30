@@ -118,7 +118,7 @@ def procedure_Tc():
 
     procedure_B()
     
-    if tokens[0].content == "->":
+    if tokens[0].content == "->":   # Should this be while or if?
         read("->")
         procedure_Tc()
         
@@ -131,23 +131,18 @@ def procedure_Tc():
             exit(1)
             
 ##############################################################
-
 def procedure_B():
-    """
-    B   -> B 'or' Bt    => 'or'
-        -> Bt;
-    --------------------------------
-    B -> Bt ('or' Bt)*
-    """
-    # print("parsing in B", tokens[0])
-    Bt()
+    # B -> B 'or' Bt 
+    #   -> Bt;
+
+    procedure_Bt()
     while tokens[0].content == "or":
         read("or")
-        Bt()
-        build_tree("or", 2)  #decide the number of children 9
-    # print("Returning from B")
+        procedure_Bt()
+        build_tree("or", 2) 
 
-def Bt():
+##############################################################
+def procedure_Bt():
     """
     Bt  -> Bt '&' Bs    => '&'
         -> Bs;
