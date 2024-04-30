@@ -415,33 +415,42 @@ def procedure_Db():
 
 ##############################################################
 def procedure_Vb(): 
-    """
-    Vb -> <IDENTIFIER>
-        -> '(' Vl ')'
-        -> '(' ')'  => '()'
-    """
-    # print("parsing in Vb", tokens[0])
+    # Vb -> <IDENTIFIER>
+    #    -> '(' Vl ')'
+    #    -> '(' ')' 
+    
+    value_1 = tokens[0].content 
+
     if tokens[0].type == "<IDENTIFIER>":
-        val = tokens[0].content
-        # print(tokens[0])
-        read(tokens[0].content)
-        build_tree(val, 0)     ####<id
-    elif tokens[0].content == "(":
+        read(value_1)
+        build_tree("<ID:" + value_1 + ">", 0)     
+        
+    elif value_1 == "(":
         read("(")
-        if tokens[0].content == ")":
+        
+        value_2 = tokens[0].content 
+        
+        if value_2 == ")":
             read(")")
             build_tree("()", 0)
-        elif tokens[0].type == "<IDENTIFIER>": #first set of Vl
-            val = tokens[0].content
-            read(tokens[0].content)
-            build_tree(val,0)    ####<id
+        elif tokens[0].type == "<IDENTIFIER>": 
+            read(value_2)
+            build_tree("<ID:" + value_2 + ">", 0)    
             procedure_Vl()
-            read(")")
+            
+            if tokens[0].content == ")":
+                read(")")
+            else:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
+                exit(1)
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or ')' but got " + str(tokens[0].content))
+            exit(1)
     else:
         print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or '(' but got " + str(tokens[0].content))
         exit(1)
-    # print("Returning from Vb")
-
+    
+##############################################################
 def procedure_Vl():
     """
     Vl  -> <IDENTIFIER> (',' <IDENTIFIER>)*    => ','?
