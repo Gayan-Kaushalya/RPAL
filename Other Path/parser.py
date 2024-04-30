@@ -153,22 +153,19 @@ def procedure_Bt():
         build_tree("&", 2)
         
 ##############################################################
-
 def procedure_Bs():
-    """
-    Bs  -> 'not' Bp    => 'not'
-        -> Bp;
-    """
-    # print("parsing in Bs", tokens[0])
+    # Bs -> 'not' Bp
+    #    -> Bp;
+    
     if tokens[0].content == "not":
         read("not")
-        Bp()
+        procedure_Bp()
         build_tree("not", 1)
     else:
-        Bp()
-    # print("Returning from Bs")
-
-def Bp():
+        procedure_Bp()
+        
+##############################################################
+def procedure_Bp():
     """
     Bp  -> A ('gr' | '>' ) A    => 'gr'
         -> A ('ge' | '>=' ) A   => 'ge'
