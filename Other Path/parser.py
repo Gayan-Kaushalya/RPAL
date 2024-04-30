@@ -231,27 +231,23 @@ def procedure_A():
     
 ##############################################################
 def procedure_At():
-    """
-    At  -> At '*' Af    => '*'
-        -> At '/' Af    => '/'
-        -> Af;
-    --------------------------------
-    At -> Af (* Af | / Af)*
-    """
-    # print("parsing in At", tokens[0])
-    Af()
-    while tokens[0].content == "*" or tokens[0].content == "/":
+    # At -> At '*' Af   
+    #    -> At '/' Af    
+    #    -> Af;
+
+    procedure_Af()
+    while tokens[0].content in ["*", "/"]:
         if tokens[0].content=="*":
             read("*")
-            Af()
+            procedure_Af()
             build_tree("*", 2)
         elif tokens[0].content=="/":
             read("/")
-            Af()
+            procedure_Af()
             build_tree("/", 2)
-    # print("Returning from At")
 
-def Af():
+##############################################################
+def procedure_Af():
     """
     Af  -> Ap '**' Af    => '**'
         -> Ap;
@@ -262,7 +258,7 @@ def Af():
     Ap()
     if tokens[0].content == "**":
         read("**")
-        Af()
+        procedure_Af()
         build_tree("**", 2)
     # print("Returning from Af")
     
