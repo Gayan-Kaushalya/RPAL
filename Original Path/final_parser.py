@@ -310,7 +310,7 @@ def procedure_Da():
         build_tree("and", n+1)
 
         
-def procedure_Dr():                             # Not sure
+def procedure_Dr():                           
     if tokens[0].content == "rec":
         read(tokens[0])
         tokens.pop(0)

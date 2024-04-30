@@ -356,20 +356,18 @@ def procedure_Da():
     
 ##############################################################
 def procedure_Dr():
-    """
-    Dr  -> 'rec' Db    => 'rec'
-        -> Db
-    """
-    # print("parsing in Dr", tokens[0])
+    # Dr -> 'rec' Db
+    #    -> Db
+
     if tokens[0].content == "rec":
         read("rec")
-        Db()
+        procedure_Db()
         build_tree("rec", 1)
     else:
-        Db()
-    # print("Returning from Dr")
-
-def Db():
+        procedure_Db()
+    
+##############################################################
+def procedure_Db():
     """
     Db  -> Vl '=' E    => '='  first set of vl is <identifier>
         -> <identifier> Vb+ '=' E    => 'fcn_form'
