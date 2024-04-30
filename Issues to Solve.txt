@@ -60,3 +60,5 @@ problem in T()
 Not an issue - Understand about first sets
 
 Need an example to test Ap
+
+line number variable

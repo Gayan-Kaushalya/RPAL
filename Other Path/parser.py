@@ -259,7 +259,7 @@ def procedure_Af():
  
 ##############################################################    
 def procedure_Ap():
-    # Ap -> Ap '@' <identifier> R
+    # Ap -> Ap '@' <IDENTIFIER> R
     #    -> R
 
     procedure_R()
@@ -368,48 +368,55 @@ def procedure_Dr():
     
 ##############################################################
 def procedure_Db():
-    """
-    Db  -> Vl '=' E    => '='  first set of vl is <identifier>
-        -> <identifier> Vb+ '=' E    => 'fcn_form'
-        -> '(' D ')'
-    """
-    # print("parsing in Db", tokens[0])
-    if tokens[0].content == "(":
+    # Db -> Vl '=' E   
+    #    -> <IDENTIFIER> Vb+ '=' E    
+    #    -> '(' D ')'
+    
+    value = tokens[0].content
+    
+    if value == "(":
         read("(")
         procedure_D()
-        read(")")
-
+        
+        if tokens[0].content == ")":
+            read(")")
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
+            exit(1)
 
     elif tokens[0].type == "<IDENTIFIER>":
-        val = tokens[0].content
-        read(tokens[0].content)
-        build_tree(val,0)  ####<id
+        read(value)
+        build_tree("<ID:" + value + ">", 0)  
 
-        if tokens[0].content=="," or tokens[0].content == "=":  #checking if this should go through vl
-            Vl()
+        if tokens[0].content in [",", "="]:  
+            procedure_Vl()
             read("=")
             procedure_E()
             build_tree("=", 2)
         
-        else: # going through Vb path
-            n=0
-            procedure_Vb()
-            n+=1
-            while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(":  # check if the next token is in the first set of Vb
-                read(tokens[0].content)
-                procedure_Vb()
-                n+=1
-            read("=")
-            procedure_E()
-            build_tree("fcn_form", n+2)
-    # else:
-    #     Vl()
+        else: 
+            n = 0
         
-    # print("Returning from Db")
+            while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(":
+                procedure_Vb()
+                n += 1
+                
+            if n == 0:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or '(' but got " + str(tokens[0].content))
+                exit(1)    
+                
+            if tokens[0].content == "=":
+                read("=")
+                procedure_E()
+                build_tree("function_form", n + 2)
+            else:
+                print("Syntax error in line " + str(tokens[0].line) + ": Expected '=' but got " + str(tokens[0].content))
+                exit(1)
 
+##############################################################
 def procedure_Vb(): 
     """
-    Vb -> <identifier>
+    Vb -> <IDENTIFIER>
         -> '(' Vl ')'
         -> '(' ')'  => '()'
     """
@@ -428,16 +435,16 @@ def procedure_Vb():
             val = tokens[0].content
             read(tokens[0].content)
             build_tree(val,0)    ####<id
-            Vl()
+            procedure_Vl()
             read(")")
     else:
         print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or '(' but got " + str(tokens[0].content))
         exit(1)
     # print("Returning from Vb")
 
-def Vl():
+def procedure_Vl():
     """
-    Vl  -> <identifier> (',' <identifier>)*    => ','?
+    Vl  -> <IDENTIFIER> (',' <IDENTIFIER>)*    => ','?
     """ 
     # print("parsing in Vl", tokens[0])
     n=0
