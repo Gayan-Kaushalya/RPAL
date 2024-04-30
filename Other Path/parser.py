@@ -203,37 +203,34 @@ def procedure_Bp():
 
 ##############################################################
 def procedure_A():
-    """
-    A   -> A '+' At    => '+'
-        -> A '-' At    => '-'
-        ->   '+' At
-        ->   '-' At    => 'neg'
-        -> At;
-    --------------------------------
-    A -> ( '+' At | '-' At | At ) ( '+' At | '-' At)*
-    """
-    # print("parsing in A", tokens[0])
+    # A -> A '+' At  
+    #   -> A '-' At  
+    #   ->   '+' At
+    #   ->   '-' At   
+    #   -> At;
+
     if tokens[0].content=="+":
         read("+")
-        At()
+        procedure_At()
     elif tokens[0].content=="-":
         read("-")
-        At()
+        procedure_At()
         build_tree("neg", 1)
     else:
-        At()
-    while tokens[0].content == "+" or tokens[0].content == "-":
+        procedure_At()
+        
+    while tokens[0].content in ["+", "-"]:
         if tokens[0].content=="+":
             read("+")
-            At()
+            procedure_At()
             build_tree("+", 2)
-        elif tokens[0].content=="-":
+        else:
             read("-")
-            At()
+            procedure_At()
             build_tree("-", 2)
-    # print("Returning from A")
-
-def At():
+    
+##############################################################
+def procedure_At():
     """
     At  -> At '*' Af    => '*'
         -> At '/' Af    => '/'

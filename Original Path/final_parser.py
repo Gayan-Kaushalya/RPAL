@@ -207,7 +207,7 @@ def procedure_A():
             read(tokens[0])
             tokens.pop(0)
             procedure_At()
-            build_tree("-", 1)
+            build_tree("-", 2)
             
 def procedure_At():
     procedure_Af()
