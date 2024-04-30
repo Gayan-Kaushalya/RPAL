@@ -25,7 +25,7 @@ def print_tree():
  
 def read(expected_token):
     if tokens[0].content != expected_token:
-        print(f"Error: Expected {expected_token} but got {tokens[0].content}")
+        print("Syntax error in line " + str(tokens[0].line) + ": Expected " + str(expected_token) + " but got " + str(tokens[0].content))
         exit(1)
      
     if not tokens[0].is_last_token:
@@ -58,7 +58,7 @@ def procedure_E():
         read("fn")
         n = 0
 
-        while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(": # first set of Vb ->[ <IDENTIFIER> , '(' ]
+        while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(": 
             procedure_Vb()
             n += 1
             
@@ -285,7 +285,7 @@ def procedure_R():
         build_tree("gamma", 2)
     
 ##############################################################
-def procedure_Rn():
+def procedure_Rn():    # we can create a variable named tok_type
     # Rn -> <IDENTIFIER>
     #    -> <INTEGER>
     #    -> <STRING>
@@ -295,40 +295,39 @@ def procedure_Rn():
     #    -> '(' E ')'
     #    -> 'dummy'     
     
-    if tokens[0].content == "true":
-        read("true")
-        build_tree("true", 0)
-    elif tokens[0].content == "false":
-        read("false")
-        build_tree("false", 0)
-    elif tokens[0].content == "nil":
-        read("nil")
-        build_tree("nil", 0)
-    elif tokens[0].content == "dummy":
-        read("dummy")
-        build_tree("dummy", 0)
-    elif tokens[0].content == "(":
+    value = tokens[0].content
+    
+    if tokens[0].type == "<IDENTIFIER>":
+        read(value)
+        build_tree("<ID:" + value + ">", 0)
+        
+    elif tokens[0].type == "<INTEGER>":
+        read(value)
+        build_tree("<INT:" + value + ">", 0)
+        
+    elif tokens[0].type == "<STRING>":
+        read(value)
+        build_tree("<STR:" + value + ">", 0)
+        
+    elif value in ["true", "false", "nil", "dummy"]:
+        read(value)
+        build_tree(value, 0)
+        
+    elif value == "(":
         read("(")
         procedure_E()
-        read(")")
-    # for other Identifier tokens
-    elif tokens[0].type == "<IDENTIFIER>":
-        val = tokens[0].content
-        read(tokens[0].content)
-        build_tree("id :"+ val, 0)
-    elif tokens[0].type == "<INTEGER>":
-        val = tokens[0].content
-        read(tokens[0].content)
-        build_tree("int :"+ val, 0)
-    elif tokens[0].type == "<STRING>":
-        val = tokens[0].content
-        read(tokens[0].content)
-        build_tree("str :"+ val, 0)
+        
+        if tokens[0].content == ")":        #### Should we call value again here?
+            read(")")
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
+            exit(1)
+            
     else:
-        print(f"Error: Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got {tokens[0].content}")
+        print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got " + str(tokens[0].content))
         exit(1)
-    # print("Returning from Rn")
 
+##############################################################
 def procedure_D():
     """
     D   -> Da 'within' D    => 'within'
@@ -388,7 +387,7 @@ def Db():
     elif tokens[0].type == "<IDENTIFIER>":
         val = tokens[0].content
         read(tokens[0].content)
-        build_tree(val,0)
+        build_tree(val,0)  ####<id
 
         if tokens[0].content=="," or tokens[0].content == "=":  #checking if this should go through vl
             Vl()
@@ -423,7 +422,7 @@ def procedure_Vb():
         val = tokens[0].content
         # print(tokens[0])
         read(tokens[0].content)
-        build_tree(val, 0)
+        build_tree(val, 0)     ####<id
     elif tokens[0].content == "(":
         read("(")
         if tokens[0].content == ")":
@@ -432,11 +431,11 @@ def procedure_Vb():
         elif tokens[0].type == "<IDENTIFIER>": #first set of Vl
             val = tokens[0].content
             read(tokens[0].content)
-            build_tree(val,0)
+            build_tree(val,0)    ####<id
             Vl()
             read(")")
     else:
-        print(f"Error: Expected an identifier or  '(' but got {tokens[0].content}")
+        print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier or '(' but got " + str(tokens[0].content))
         exit(1)
     # print("Returning from Vb")
 
@@ -451,7 +450,7 @@ def Vl():
         if tokens[0].type == "<IDENTIFIER>":
             val = tokens[0].content
             read(tokens[0].content)
-            build_tree(val,0)
+            build_tree(val,0)    ####<id
             n+=1
         else:
             print("Error from Vl")

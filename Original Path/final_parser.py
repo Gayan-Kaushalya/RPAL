@@ -192,7 +192,7 @@ def procedure_A():
         read(tokens[0])
         tokens.pop(0)
         procedure_At()
-        build_tree(dic[tokens[0].content], 1) ## There were some codes where this line was not for plus sign
+        build_tree(dic[tokens[0].content], 2) ## There were some codes where this line was not for plus sign
         
     else:
         procedure_At()
@@ -245,7 +245,7 @@ def procedure_Ap():
             read(tokens[0])
             tokens.pop(0)
             procedure_R()
-            build_tree("@", 3)        # Not sure whether this is 2 or 3
+            build_tree("@", 3)        
             
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier but got " + str(tokens[0].content))
@@ -255,7 +255,7 @@ def procedure_R():
     procedure_Rn()
     
     
-    while (tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords)  and tokens[0].content not in ['where','rec','eq'] : ## Not sure. But had to do. # have to add other words such as neg, ge                                                          
+    while (tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content == "(" or tokens[0].content in pseudo_keywords)  and tokens[0].content not in ['where','rec','eq'] :                                                          
         procedure_Rn()
         build_tree("gamma", 2)
 
