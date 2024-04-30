@@ -10,7 +10,7 @@ def build_tree(value, num_children):
     node = Node(value)
     node.children = [None] * num_children
     
-    for i in range (num_children - 1, -1, -1): #i = 5 4 3 2 1 0 for 6 children
+    for i in range (num_children - 1, -1, -1): 
         if stack.is_empty():
             print("Can't build tree, stack is empty")
         node.children[i] = stack.pop()
@@ -35,6 +35,7 @@ def parse(tokens):
     procedure_E()
     print_tree()
  
+############################################################## 
 def procedure_E():
     # E -> 'let' D 'in' E   
     #   -> 'fn'  Vb+ '.' E 
@@ -101,22 +102,18 @@ def procedure_T():
         
 ##############################################################      
 def procedure_Ta():
-    """ 
-    Ta  -> Ta 'aug' Tc    => 'aug'
-        -> Tc;
-    -------------------------------
-    Ta -> Tc ('aug' Tc)*
+    # Ta -> Ta 'aug' Tc   
+    #    -> Tc;
+
+    procedure_Tc()
     
-    """
-    # print("parsing in Ta", tokens[0])
-    Tc()
     while tokens[0].content == "aug":
         read("aug")
-        Tc()
-        build_tree("aug", 2)  #decide the number of children 7
-    # print("Returning from Ta")
-
-def Tc():
+        procedure_Tc()
+        build_tree("aug", 2)  
+        
+##############################################################
+def procedure_Tc():
     """
     Tc  -> B '->' Tc '|' Tc   => '->'
         -> B;
@@ -127,9 +124,9 @@ def Tc():
     B()
     if tokens[0].content == "->":
         read("->")
-        Tc()
+        procedure_Tc()
         read("|")
-        Tc()
+        procedure_Tc()
         build_tree("->", 3)
     # print("Returning from Tc")
 
