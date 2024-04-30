@@ -36,8 +36,8 @@ def parse(tokens):
     print_tree()
  
 def procedure_E():
-    # E -> 'let' D 'in' E   => 'let'
-    #   -> 'fn'  Vb+ '.' E  => 'lambda'
+    # E -> 'let' D 'in' E   
+    #   -> 'fn'  Vb+ '.' E 
     #   ->  Ew;
     
     if tokens[0].content == "let":
@@ -56,21 +56,25 @@ def procedure_E():
     elif tokens[0].content == "fn":
         read("fn")
         n = 0
-        procedure_Vb()
-        n += 1
+
         while tokens[0].type == "<IDENTIFIER>" or tokens[0].type == "(": # first set of Vb ->[ <IDENTIFIER> , '(' ]
             procedure_Vb()
             n += 1
-        read(".")
-        procedure_E()
-        build_tree("lambda", n + 1)  
+            
+        if tokens[0].content == ".":
+            read(".")
+            procedure_E()
+            build_tree("lambda", n + 1)
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected '.' but got " + str(tokens[0].content))
+            exit(1) 
         
     else:
         procedure_Ew()
 
 ##############################################################
 def procedure_Ew():
-    # Ew -> T 'where' Dr    => 'where'
+    # Ew -> T 'where' Dr    
     #    -> T;
     
     procedure_T()
