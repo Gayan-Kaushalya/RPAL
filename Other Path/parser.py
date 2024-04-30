@@ -241,51 +241,41 @@ def procedure_At():
             read("*")
             procedure_Af()
             build_tree("*", 2)
-        elif tokens[0].content=="/":
+        else:
             read("/")
             procedure_Af()
             build_tree("/", 2)
 
 ##############################################################
 def procedure_Af():
-    """
-    Af  -> Ap '**' Af    => '**'
-        -> Ap;
-    ------------------------
-    Af -> Ap (    | ** Af)
-    """
-    # print("parsing in Af", tokens[0])
-    Ap()
-    if tokens[0].content == "**":
+    # Af -> Ap '**' Af  
+    #    -> Ap;
+    
+    procedure_Ap()
+    if tokens[0].content == "**":     # Should this be while or if?
         read("**")
         procedure_Af()
         build_tree("**", 2)
-    # print("Returning from Af")
-    
-def Ap():
-    """
-    Ap  -> Ap '@' <identifier> R    => '@'
-        -> R;
-    ---------------------------------
-    Ap -> R ( @ identifier R)*
-        
-    """
-    # print("parsing in Ap", tokens[0])
-    R()
+ 
+##############################################################    
+def procedure_Ap():
+    # Ap -> Ap '@' <identifier> R
+    #    -> R;
+
+    procedure_R()
     while tokens[0].content == "@":
         read("@")
-        # check if the next token is an identifier
+        
         if tokens[0].type == "<IDENTIFIER>":
             read(tokens[0].content)
-            R()
-            build_tree("@", 3)
+            procedure_R()
+            build_tree("@", 3)             # Not sure whether this is 2 or 3 
         else:
-            print(f"Error: Expected an identifier but got {tokens[0].content}")
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier but got " + str(tokens[0].content))
             exit(1)
-        
-    # print("Returning from Ap")        
-
-def R():
+    
+##############################################################
+def procedure_R():
     """
     R   -> R Rn    => 'gamma'
         -> Rn;
