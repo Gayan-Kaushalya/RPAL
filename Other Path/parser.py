@@ -106,7 +106,6 @@ def procedure_Ta():
     #    -> Tc;
 
     procedure_Tc()
-    
     while tokens[0].content == "aug":
         read("aug")
         procedure_Tc()
@@ -114,23 +113,26 @@ def procedure_Ta():
         
 ##############################################################
 def procedure_Tc():
-    """
-    Tc  -> B '->' Tc '|' Tc   => '->'
-        -> B;
-    --------------------------------
-    Tc -> B (   |  '->' Tc '|' Tc)
-    """
-    # print("parsing in Tc", tokens[0])
-    B()
+    # Tc -> B '->' Tc '|' Tc
+    #    -> B;
+
+    procedure_B()
+    
     if tokens[0].content == "->":
         read("->")
         procedure_Tc()
-        read("|")
-        procedure_Tc()
-        build_tree("->", 3)
-    # print("Returning from Tc")
+        
+        if tokens[0].content == "|":
+            read("|")
+            procedure_Tc()
+            build_tree("->", 3)
+        else:
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected '|' but got " + str(tokens[0].content))
+            exit(1)
+            
+##############################################################
 
-def B():
+def procedure_B():
     """
     B   -> B 'or' Bt    => 'or'
         -> Bt;
