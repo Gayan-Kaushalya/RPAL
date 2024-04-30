@@ -386,7 +386,7 @@ def procedure_Db():
                     exit(1)
                     
 def procedure_Vb():
-    if tokens[0].type == "<IDENTIFIER>": # not sure we need keywords too
+    if tokens[0].type == "<IDENTIFIER>": 
         read(tokens[0])
         tokens.pop(0)
         

@@ -452,25 +452,25 @@ def procedure_Vb():
     
 ##############################################################
 def procedure_Vl():
-    """
-    Vl  -> <IDENTIFIER> (',' <IDENTIFIER>)*    => ','?
-    """ 
-    # print("parsing in Vl", tokens[0])
-    n=0
+    # Vl -> <IDENTIFIER> (',' <IDENTIFIER>)*   
+    
+    n = 0
+    
     while tokens[0].content == ",":
         read(",")
+        
         if tokens[0].type == "<IDENTIFIER>":
             val = tokens[0].content
-            read(tokens[0].content)
-            build_tree(val,0)    ####<id
-            n+=1
+            read(val)
+            build_tree("<ID:" + val + ">", 0)    
+            n += 1
         else:
-            print("Error from Vl")
-    if n>0:
-        build_tree(",", n+1) 
-    # print("Returning from Vl")
+            print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier but got " + str(tokens[0].content))
+            
+    if n > 0:
+        build_tree(",", n + 1) 
 
-
+##############################################################
 
 prog_file = input()
 tokens = screen(prog_file)
