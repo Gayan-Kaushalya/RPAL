@@ -1,10 +1,8 @@
 When you run 2.txt, you can see that an extra operator symbol is identified. We have to fix this.   ########
 
-New line characters do not get removed in the screener. ##############
-
 How to identify strings, single or double quotations?
 
-When two <delete> things are together, only the first one gets deleted.
+lexical analyzer line 177
 
 Should run from the kernel
 
@@ -20,14 +18,13 @@ error handling
 
 problem in vb
 
-where is ll2 grammar used?
-
 210314 as three integers
 
 error handling sentences are not correct
 
 fn part in E()
 problem in T()
+error in vb+
 
 Not an issue - Understand about first sets
 
