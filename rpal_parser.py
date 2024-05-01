@@ -31,7 +31,11 @@ def read(expected_token):
     if not tokens[0].is_last_token:
         del tokens[0]   
 
-def parse(tokens):
+def parse(tokens, invalid_flag, invalid_token):
+    if invalid_flag:
+        print("Invalid token present in line " + str(invalid_token.line) + ": " + str(invalid_token.content))
+        exit(1)
+        
     procedure_E()
     print_tree()
  
@@ -499,5 +503,5 @@ def procedure_Vl():
 ##############################################################
 
 prog_file = input()
-tokens = screen(prog_file)
-parse(tokens)
+tokens, invalid_flag, invalid_token = screen(prog_file)
+parse(tokens, invalid_flag, invalid_token)

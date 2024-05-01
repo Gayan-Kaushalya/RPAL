@@ -62,7 +62,6 @@ def tokenize(characters):
                     current_token = int(current_token)
                 except:
                     token_names.append('<INVALID>')
-                    
                 else:
                     token_names.append('<INTEGER>')
                 
@@ -197,11 +196,10 @@ def tokenize(characters):
                 token_names.remove(token_names[i])
                 line_numbers.remove(line_numbers[i])
             else:
-                
                 tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], None)
                 tokens[i].make_last_token()
 
         else:
             tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], token_names[i+1])
             
-    return tokens    
+    return tokens  

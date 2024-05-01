@@ -1,22 +1,10 @@
-We should implement a mechanism to detect invalid tokens such as '999a'.
-We can do this in the scanning step or the screening step.
-
 When you run 2.txt, you can see that an extra operator symbol is identified. We have to fix this.   ########
-
-We should implement a separate file for testing purposes.
-
-Flag to indicate whether there are invalid tokens.
 
 New line characters do not get removed in the screener. ##############
 
-In error handling, it can be better if we can show the line number.
-
 How to identify strings, single or double quotations?
 
-Keyword list
-
 When two <delete> things are together, only the first one gets deleted.
-
 
 Should run from the kernel
 
@@ -30,25 +18,9 @@ unsure conditions
 
 error handling 
 
-build_tree when there is a while loop
-
-When we pop a token, the new tokens[0] is not the token we want.
-
-keywords and identifiers
-
-build_tree before / after function call
-
 problem in vb
 
-keyword list
-
-why did not where become a keyword?
-
 where is ll2 grammar used?
-
-tokens.pop[0] inside read
-
-do spaces inside strings get ignored?
 
 210314 as three integers
 
@@ -60,5 +32,3 @@ problem in T()
 Not an issue - Understand about first sets
 
 Need an example to test Ap
-
-line number variable

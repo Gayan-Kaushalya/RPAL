@@ -1,0 +1,12 @@
+let <KEYWORD>
+a <IDENTIFIER>
++ <OPERATOR>
+b <IDENTIFIER>
+== <OPERATOR>
+9 <INTEGER>
+d <IDENTIFIER>
+= <OPERATOR>
+ <OPERATOR>
+''Papaya'' <STRING>
+'' B's mace is strong.'' <STRING>
+99a <INVALID>
