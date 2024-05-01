@@ -1,0 +1,7 @@
+let a+b ==         9
+
+// This is a commenty//
+d=''Papaya''
+
+'' B's mace is strong.''
+99a

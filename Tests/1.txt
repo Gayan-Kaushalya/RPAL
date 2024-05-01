@@ -1,0 +1,4 @@
+let a,b == 9;
+print (a + b)
+'' fdf ''
+a+b = 9

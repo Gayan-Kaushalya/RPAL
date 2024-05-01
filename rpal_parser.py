@@ -343,7 +343,7 @@ def procedure_Rn():    # we can create a variable named tok_type
         read("(")
         procedure_E()
         
-        if tokens[0].content == ")":        #### Should we call value again here?
+        if tokens[0].content == ")":      
             read(")")
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": Expected ')' but got " + str(tokens[0].content))
@@ -486,9 +486,9 @@ def procedure_Vl():
         read(",")
         
         if tokens[0].type == "<IDENTIFIER>":
-            val = tokens[0].content
-            read(val)
-            build_tree("<ID:" + val + ">", 0)    
+            value = tokens[0].content
+            read(value)
+            build_tree("<ID:" + value + ">", 0)    
             n += 1
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier but got " + str(tokens[0].content))
