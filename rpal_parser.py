@@ -16,12 +16,8 @@ def build_tree(value, num_children):
         node.children[i] = stack.pop()
     stack.push(node)
     
-def print_tree():
-    if not stack.is_empty():
-        root = stack.pop()
-        preorder_traversal(root)
-    else:
-        print("Tree is empty")
+def print_tree(root):
+    preorder_traversal(root)
  
 def read(expected_token):
     if tokens[0].content != expected_token:
@@ -39,8 +35,14 @@ def parse(prog_file):
         exit(1)
     
     procedure_E()
-  #  print_tree()
-    return stack.pop()
+    
+    if not stack.is_empty():
+        root = stack.pop()
+       # print_tree(root)
+    else:
+        print("Stack is empty")
+        exit(1)
+    return root
  
 ############################################################## 
 def procedure_E():
