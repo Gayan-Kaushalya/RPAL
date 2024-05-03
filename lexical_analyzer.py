@@ -173,7 +173,7 @@ def tokenize(characters):
                 
                 current_token = ''
 
-            ## What is this? How does this work?
+            ## What is this? How does this work? identifier starting with __
             else:
                 print(f"Invalid token: {characters[i]} at position {i}")
                 i += 1

@@ -31,13 +31,16 @@ def read(expected_token):
     if not tokens[0].is_last_token:
         del tokens[0]   
 
-def parse(tokens, invalid_flag, invalid_token):
+def parse(prog_file):
+    global tokens
+    tokens, invalid_flag, invalid_token = screen(prog_file)
     if invalid_flag:
         print("Invalid token present in line " + str(invalid_token.line) + ": " + str(invalid_token.content))
         exit(1)
-        
+    
     procedure_E()
-    print_tree()
+  #  print_tree()
+    return stack.pop()
  
 ############################################################## 
 def procedure_E():
@@ -499,9 +502,3 @@ def procedure_Vl():
             
     if n > 0:
         build_tree(",", n + 1) 
-
-##############################################################
-
-prog_file = input()
-tokens, invalid_flag, invalid_token = screen(prog_file)
-parse(tokens, invalid_flag, invalid_token)

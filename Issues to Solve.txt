@@ -29,3 +29,8 @@ error in vb+
 Not an issue - Understand about first sets
 
 Need an example to test Ap
+
+
+problem in read
+
+problems in parser
