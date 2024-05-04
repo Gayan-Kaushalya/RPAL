@@ -1,100 +1,118 @@
-from rpal_parser import parse
 
-class ST_Node:
-    def __init__(self, name, left = None, right = None):
-        self.name = str(name)
-        self.left = left
-        self.right = right 
+from rpal_parser import *
 
 
-    def __str__(self):
-        return self.value
-    
-def standardize_let(x, p, e):
-    # This function will standardize the let node.
-    # The let node will be converted to a lambda node.
-    # The lambda node will be converted to a gamma node.
-    lambda_node = ST_Node("lambda", x, p)
-    gammma_node = ST_Node("gamma", lambda_node, e)
-    return gammma_node
 
-def standardize_where(x, p, e):
-    # This function will standardize the where node.
-    # The where node will be converted to a lambda node.
-    # The lambda node will be converted to a gamma node.
-    lambda_node = ST_Node("lambda", x, p)
-    gammma_node = ST_Node("gamma", lambda_node, e)          ## not sure about the order of the arguments
-    return gammma_node
+def standardize(node):
+    for child in node.children:
+        standardize(child)
 
-def standardize_tau(e_list):
-    # This function will standardize the tau node.
-    # The tau node will be converted to a gamma node.
-    # The gamma node will be converted to a gamma node.
-    nil_node = ST_Node("nil")
-    
-    for e in e_list:
-        gamma_node = ST_Node("gamma", ST_Node("aug"), nil_node)
-        nil_node = ST_Node("gamma", gamma_node, e)
-    
-    return gamma_node
+    if node.value == "let" and node.children[0].value == "=":
+        child_0 = node.children[0]
+        child_1 = node.children[1]
 
-#def standardize_if(b, t, e):
-def standardize_op(op, e1, e2):
-    # This function will standardize the op node.
-    # The op node will be converted to a gamma node.
-    # The gamma node will be converted to a gamma node.
-    gamma_node2 = ST_Node("gamma", ST_Node(op), e1)
-    gamma_node1 = ST_Node("gamma", gamma_node2, e2)
-    return gamma_node1
+        node.children[1] = child_0.children[1]
+        node.children[0].children[1] = child_1
+        node.children[0].value = "lambda"
+        node.value = "gamma"
 
-def standardize_fcn_form(p, v_list, e):
-    # This function will standardize the fcn_form node.
-    # The fcn_form node will be converted to a lambda node.
-    # The lambda node will be converted to a gamma node.
-    lambda_node = ST_Node("lambda", v_list[-1], e)
-    
-    for v in v_list[:-1:-1]:
-        lambda_node = ST_Node("lambda", v, lambda_node)
-    
-    return ST_Node("=", p, lambda_node)
+    elif node.value == "where" and node.children[1].value == "=":
+        child_0 = node.children[0] #p
+        child_1 = node.children[1] #=
 
+        node.children[0] = child_1.children[1]
+        node.children[1].children[1] = child_0
+        node.children[1].value = "lambda"
+        node.children[0], node.children[1] = node.children[1], node.children[0]
+        node.value = "gamma"
 
-def standardize_lambda_ve(v_list, e):
-    lambda_node = e
-    
-    for v in v_list[::-1]:
-        lambda_node = ST_Node("lambda", v, lambda_node)
-        
-    return lambda_node
+    elif node.value == "function_form":
+        expression = node.children.pop()
 
-def standardize_within(x1, x2, e1, e2):
-    # This function will standardize the within node.
-    # The within node will be converted to a lambda node.
-    # The lambda node will be converted to a gamma node.
-    lambda_node = ST_Node("lambda", x1, e2)
-    gamma_node = ST_Node("gamma", lambda_node, e1)
-    
-    return ST_Node("=", x2, gamma_node)
+        currentNode = node
+        for i in range(len(node.children) - 1):
+            lambdaNode = AST_Node("lambda")
+            child = node.children.pop(1)
+            lambdaNode.addChild(child)
+            currentNode.addChild(lambdaNode)
+            currentNode = lambdaNode
 
-def standardize_rec(x, e):
-    # This function will standardize the rec node.
-    # The rec node will be converted to a gamma node.
-    # The gamma node will be converted to a gamma node.
-    lambda_node = ST_Node("lambda", x, e)
-    gamma_node = ST_Node("gamma", "Y*", lambda_node)
-    
-    
+        currentNode.addChild(expression)
 
-def standardize(root):
-    # This function will standardize the AST.
-    # The AST will be traversed and the standardization will be done in a bottom-up manner.
-    if root is None:
-        return None
-    
-    # WE must go until a leaf node is reached
+        node.value = "="
 
+    elif node.value == "gamma" and len(node.children) > 2:
+        expression = node.children.pop()
+
+        currentNode = node
+        for i in range(len(node.children) - 1):
+            lambdaNode = AST_Node("lambda")
+            child = node.children.pop(1)
+            lambdaNode.addChild(child)
+            currentNode.addChild(lambdaNode)
+            currentNode = lambdaNode
+
+        currentNode.addChild(expression)
+
+    elif node.value == "within" and node.children[0].value == node.children[1].value == "=":
+        child_0 = node.children[1].children[0]
+        child_1 = AST_Node("gamma")
+
+        child_1.addChild(AST_Node("lambda"))
+        child_1.addChild(node.children[0].children[1])
+        child_1.children[0].addChild(node.children[0].children[0])
+        child_1.children[0].addChild(node.children[1].children[1])
+
+        node.children[0] = child_0
+        node.children[1] = child_1
+
+        node.value = "="
+
+    elif node.value == "@":
+        expression = node.children.pop(0)
+        identifier = node.children[0]
+
+        gammaNode = AST_Node("gamma")
+        gammaNode.addChild(identifier)
+        gammaNode.addChild(expression)
+
+        node.children[0] = gammaNode
+
+        node.value = "gamma"
+
+    elif node.value == "and":
+        child_0 = AST_Node(",")
+        child_1 = AST_Node("tau")
+
+        for child in node.children:
+            child_0.addChild(child.children[0])
+            child_1.addChild(child.children[1])
+
+        node.children.clear()
+
+        node.addChild(child_0)
+        node.addChild(child_1)
+
+        node.value = "="
+
+    elif node.value == "rec":
+        temp = node.children.pop()
+        temp.value = "lambda"
+
+        gammaNode = AST_Node("gamma")
+        gammaNode.addChild(AST_Node("<Y*>"))
+        gammaNode.addChild(temp)
+
+        node.addChild(temp.children[0])
+        node.addChild(gammaNode)
+
+        node.value = "="
+
+    return node
 
 prog_file = input()
 
-tree = parse(prog_file)
-standardize(tree)
+ast = parse(prog_file)
+st = standardize(ast)
+
+preorder_traversal(st)

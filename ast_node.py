@@ -4,6 +4,8 @@ class AST_Node:
         self.children = []  
         self.level = 0
         
+    def addChild(self, child):
+        self.children.append(child)
         
 def preorder_traversal(root):
     if root is None:
@@ -17,3 +19,4 @@ def preorder_traversal(root):
     for child in root.children:
         child.level = root.level + 1
         preorder_traversal(child)  # Recursively traverse each child node with increased level
+        

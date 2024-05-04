@@ -34,3 +34,8 @@ Need an example to test Ap
 problem in read
 
 problems in parser
+
+change the standardizer file
+remove addChild function
+
+put github link in the report
