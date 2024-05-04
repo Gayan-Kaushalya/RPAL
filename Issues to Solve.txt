@@ -1,6 +1,6 @@
 When you run 2.txt, you can see that an extra operator symbol is identified. We have to fix this.   ########
 
-How to identify strings, single or double quotations?
+How to identify strings, single or double quotations? Mention our way in report
 
 lexical analyzer line 177
 
