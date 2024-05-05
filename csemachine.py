@@ -235,7 +235,7 @@ def applyRules():
             elif(symbol == "*"):
                 stack.append(rand_1*rand_2)
             elif(symbol == "/"):
-                stack.append(rand_1/rand_2)
+                stack.append(rand_1//rand_2)
             elif(symbol == "**"):
                 stack.append(rand_1**rand_2)
             elif(symbol == "gr"):

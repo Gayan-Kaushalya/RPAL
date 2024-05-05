@@ -26,6 +26,11 @@ def read(expected_token):
      
     if not tokens[0].is_last_token:
         del tokens[0]   
+        
+    else:
+        if tokens[0].type != ")":
+            tokens[0].type = ")"    
+            
 
 def parse(prog_file):
     global tokens
@@ -38,10 +43,10 @@ def parse(prog_file):
     
     if not stack.is_empty():
         root = stack.pop()
-       # print_tree(root)
     else:
         print("Stack is empty")
         exit(1)
+        
     return root
  
 ############################################################## 
@@ -69,7 +74,7 @@ def procedure_E():
             n += 1
             
         if n == 0:
-            print("Syntax error in line " + str(tokens[0].line) + ": Expected at least one Vb but got none")
+            print("Syntax error in line " + str(tokens[0].line) + ": Identifier or '(' expected")
             exit(1)
             
         if tokens[0].content == ".":
@@ -297,7 +302,7 @@ def procedure_R():
     procedure_Rn()
     
     # R -> R Rn
-    while tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: 
+    while  tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: 
         procedure_Rn()
         build_tree("gamma", 2)
     
@@ -340,7 +345,7 @@ def procedure_Rn():
             exit(1)
             
     else:
-        print("Syntax error in line " + str(tokens[0].line) + ": Expected an identifier, integer, string, 'true', 'false', 'nil', '(', or 'dummy' but got " + str(tokens[0].content))
+        print("Syntax error in line " + str(tokens[0].line) + ": Identifier, Integer, String, 'true', 'false', 'nil', 'dummy' or '(' expected")
         exit(1)
 
 ##############################################################

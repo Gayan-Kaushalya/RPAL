@@ -3,7 +3,7 @@ from rpal_token import Token
 letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 digits = '0123456789'
 underscore = '_'
-operators = '+-*<>&.@/:=~|$!#%^_[]{}\"\'?'
+operators = '+-*<>&.@/:=~|$!#%^_[]{}\"?'
 punctuation = '();,'
 newline = '\n'
 
@@ -85,7 +85,7 @@ def tokenize(characters):
                 current_token = ''
                 
             # Separating strings
-            # Stings should start with '' and end with ''.  
+            # Stings should start with ' and end with '.  
             elif characters[i] == "'":
                 current_token += characters[i]
                 i += 1
@@ -149,7 +149,7 @@ def tokenize(characters):
                 i += 1
                 
             # Separating operators
-            # While doing this we should be careful about the case of '' and //.
+            # While doing this we should be careful about the case of ' and //.
             elif characters[i] in operators:
                 while i < len(characters) and characters[i] in operators:
                     if characters[i] == '/':
@@ -159,14 +159,14 @@ def tokenize(characters):
                             current_token = ''
                             line_numbers.append(line_number)
                             break
-                        
+                    '''   
                     if characters[i] == "'":
                         tokens.append(current_token)
                         token_names.append('<OPERATOR>')
                         current_token = ''
                         line_numbers.append(line_number)
                         break
-                            
+                     '''        
                     
                     current_token += characters[i]
                     i += 1
