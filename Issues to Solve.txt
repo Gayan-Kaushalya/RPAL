@@ -45,5 +45,6 @@ failing test cases
 remove previous token type and next token type
 
 Elaborate more on
-file not found = maybe you are using flags in the wrong Order
 found ' = string may be 
+
+st and ast calling together creates a problem
