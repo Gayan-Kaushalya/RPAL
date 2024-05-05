@@ -6,7 +6,7 @@ keywords = [
     "where",
     "rec",
     "fn" ,          
-    "aug"
+    "aug",
     "or",
     "not",
     "gr",
@@ -20,7 +20,7 @@ keywords = [
     "nil",
     "dummy",
     "within",
-    "and"
+    "and",
 ]
 
 characters = []

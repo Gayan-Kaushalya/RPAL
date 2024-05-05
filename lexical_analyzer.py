@@ -86,21 +86,25 @@ def tokenize(characters):
                 
             # Separating strings
             # Stings should start with '' and end with ''.  
-            elif characters[i] == "'" and characters[i+1] == "'":
+            elif characters[i] == "'":
                 current_token += characters[i]
-                current_token += characters[i+1]
-                i += 2
+                i += 1
                 
                 while i < len(characters):
-                    if characters[i] == "'" and characters[i+1] == "'":
-                        current_token += characters[i]
-                        current_token += characters[i+1]
-                        i += 2
-                        break
-                    else:
-                        #####The strings can contain only a set of characters. That should be checked
+                    if characters[i] == "\n":
+                        line_number += 1
+                    
+                    if characters[i] == "'":
                         current_token += characters[i]
                         i += 1
+                        break
+                    else:
+                        current_token += characters[i]
+                        i += 1
+                        
+                if len(current_token) == 1 or current_token[-1] != "'":
+                    print("String not closed properly.")
+                    exit(1)
                         
                 tokens.append(current_token)
                 token_names.append('<STRING>')
@@ -157,12 +161,12 @@ def tokenize(characters):
                             break
                         
                     if characters[i] == "'":
-                        if characters[i+1] == "'":
-                            tokens.append(current_token)
-                            token_names.append('<OPERATOR>')
-                            current_token = ''
-                            line_numbers.append(line_number)
-                            break
+                        tokens.append(current_token)
+                        token_names.append('<OPERATOR>')
+                        current_token = ''
+                        line_numbers.append(line_number)
+                        break
+                            
                     
                     current_token += characters[i]
                     i += 1
