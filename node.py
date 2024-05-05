@@ -1,11 +1,8 @@
-class AST_Node:
+class Node:
     def __init__(self, value):
         self.value = value
         self.children = []  
         self.level = 0
-        
-    def addChild(self, child):
-        self.children.append(child)
         
 def preorder_traversal(root):
     if root is None:

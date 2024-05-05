@@ -3,112 +3,112 @@ from rpal_parser import *
 
 
 
-def standardize(node):
-    for child in node.children:
+def standardize(root):
+    for child in root.children:
         standardize(child)
 
-    if node.value == "let" and node.children[0].value == "=":
-        child_0 = node.children[0]
-        child_1 = node.children[1]
+    if root.value == "let" and root.children[0].value == "=":
+        child_0 = root.children[0]
+        child_1 = root.children[1]
 
-        node.children[1] = child_0.children[1]
-        node.children[0].children[1] = child_1
-        node.children[0].value = "lambda"
-        node.value = "gamma"
+        root.children[1] = child_0.children[1]
+        root.children[0].children[1] = child_1
+        root.children[0].value = "lambda"
+        root.value = "gamma"
 
-    elif node.value == "where" and node.children[1].value == "=":
-        child_0 = node.children[0] #p
-        child_1 = node.children[1] #=
+    elif root.value == "where" and root.children[1].value == "=":
+        child_0 = root.children[0] #p
+        child_1 = root.children[1] #=
 
-        node.children[0] = child_1.children[1]
-        node.children[1].children[1] = child_0
-        node.children[1].value = "lambda"
-        node.children[0], node.children[1] = node.children[1], node.children[0]
-        node.value = "gamma"
+        root.children[0] = child_1.children[1]
+        root.children[1].children[1] = child_0
+        root.children[1].value = "lambda"
+        root.children[0], root.children[1] = root.children[1], root.children[0]
+        root.value = "gamma"
 
-    elif node.value == "function_form":
-        expression = node.children.pop()
+    elif root.value == "function_form":
+        expression = root.children.pop()
 
-        currentNode = node
-        for i in range(len(node.children) - 1):
-            lambdaNode = AST_Node("lambda")
-            child = node.children.pop(1)
-            lambdaNode.addChild(child)
-            currentNode.addChild(lambdaNode)
+        currentNode = root
+        for i in range(len(root.children) - 1):
+            lambdaNode = Node("lambda")
+            child = root.children.pop(1)
+            lambdaNode.children.append(child)
+            currentNode.children.append(lambdaNode)
             currentNode = lambdaNode
 
-        currentNode.addChild(expression)
+        currentNode.children.append(expression)
 
-        node.value = "="
+        root.value = "="
 
-    elif node.value == "gamma" and len(node.children) > 2:
-        expression = node.children.pop()
+    elif root.value == "gamma" and len(root.children) > 2:
+        expression = root.children.pop()
 
-        currentNode = node
-        for i in range(len(node.children) - 1):
-            lambdaNode = AST_Node("lambda")
-            child = node.children.pop(1)
-            lambdaNode.addChild(child)
-            currentNode.addChild(lambdaNode)
+        currentNode = root
+        for i in range(len(root.children) - 1):
+            lambdaNode = Node("lambda")
+            child = root.children.pop(1)
+            lambdaNode.children.append(child)
+            currentNode.children.append(lambdaNode)
             currentNode = lambdaNode
 
-        currentNode.addChild(expression)
+        currentNode.children.append(expression)
 
-    elif node.value == "within" and node.children[0].value == node.children[1].value == "=":
-        child_0 = node.children[1].children[0]
-        child_1 = AST_Node("gamma")
+    elif root.value == "within" and root.children[0].value == root.children[1].value == "=":
+        child_0 = root.children[1].children[0]
+        child_1 = Node("gamma")
 
-        child_1.addChild(AST_Node("lambda"))
-        child_1.addChild(node.children[0].children[1])
-        child_1.children[0].addChild(node.children[0].children[0])
-        child_1.children[0].addChild(node.children[1].children[1])
+        child_1.children.append(Node("lambda"))
+        child_1.children.append(root.children[0].children[1])
+        child_1.children[0].children.append(root.children[0].children[0])
+        child_1.children[0].children.append(root.children[1].children[1])
 
-        node.children[0] = child_0
-        node.children[1] = child_1
+        root.children[0] = child_0
+        root.children[1] = child_1
 
-        node.value = "="
+        root.value = "="
 
-    elif node.value == "@":
-        expression = node.children.pop(0)
-        identifier = node.children[0]
+    elif root.value == "@":
+        expression = root.children.pop(0)
+        identifier = root.children[0]
 
-        gammaNode = AST_Node("gamma")
-        gammaNode.addChild(identifier)
-        gammaNode.addChild(expression)
+        gammaNode = Node("gamma")
+        gammaNode.children.append(identifier)
+        gammaNode.children.append(expression)
 
-        node.children[0] = gammaNode
+        root.children[0] = gammaNode
 
-        node.value = "gamma"
+        root.value = "gamma"
 
-    elif node.value == "and":
-        child_0 = AST_Node(",")
-        child_1 = AST_Node("tau")
+    elif root.value == "and":
+        child_0 = Node(",")
+        child_1 = Node("tau")
 
-        for child in node.children:
-            child_0.addChild(child.children[0])
-            child_1.addChild(child.children[1])
+        for child in root.children:
+            child_0.children.append(child.children[0])
+            child_1.children.append(child.children[1])
 
-        node.children.clear()
+        root.children.clear()
 
-        node.addChild(child_0)
-        node.addChild(child_1)
+        root.children.append(child_0)
+        root.children.append(child_1)
 
-        node.value = "="
+        root.value = "="
 
-    elif node.value == "rec":
-        temp = node.children.pop()
+    elif root.value == "rec":
+        temp = root.children.pop()
         temp.value = "lambda"
 
-        gammaNode = AST_Node("gamma")
-        gammaNode.addChild(AST_Node("<Y*>"))
-        gammaNode.addChild(temp)
+        gammaNode = Node("gamma")
+        gammaNode.children.append(Node("<Y*>"))
+        gammaNode.children.append(temp)
 
-        node.addChild(temp.children[0])
-        node.addChild(gammaNode)
+        root.children.append(temp.children[0])
+        root.children.append(gammaNode)
 
-        node.value = "="
+        root.value = "="
 
-    return node
+    return root
 
 prog_file = input()
 

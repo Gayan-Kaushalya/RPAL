@@ -1,13 +1,13 @@
 from screener import screen
 from stack import Stack
-from ast_node import *
+from node import *
 
 # A stack containing nodes
 stack = Stack()
 
 # Try to change this function
 def build_tree(value, num_children):
-    node = AST_Node(value)
+    node = Node(value)
     node.children = [None] * num_children
     
     for i in range (num_children - 1, -1, -1): 
