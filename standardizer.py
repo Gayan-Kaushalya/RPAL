@@ -1,11 +1,15 @@
 
 from rpal_parser import *
 
+def standardize(file_name):
+    ast = parse(file_name)
+    st = make_standardized_tree(ast)
+    
+    return st
 
-
-def standardize(root):
+def make_standardized_tree(root):
     for child in root.children:
-        standardize(child)
+        make_standardized_tree(child)
 
     if root.value == "let" and root.children[0].value == "=":
         child_0 = root.children[0]
@@ -29,30 +33,30 @@ def standardize(root):
     elif root.value == "function_form":
         expression = root.children.pop()
 
-        currentNode = root
+        current_node = root
         for i in range(len(root.children) - 1):
-            lambdaNode = Node("lambda")
+            lambda_node = Node("lambda")
             child = root.children.pop(1)
-            lambdaNode.children.append(child)
-            currentNode.children.append(lambdaNode)
-            currentNode = lambdaNode
+            lambda_node.children.append(child)
+            current_node.children.append(lambda_node)
+            current_node = lambda_node
 
-        currentNode.children.append(expression)
+        current_node.children.append(expression)
 
         root.value = "="
 
     elif root.value == "gamma" and len(root.children) > 2:
         expression = root.children.pop()
 
-        currentNode = root
+        current_node = root
         for i in range(len(root.children) - 1):
-            lambdaNode = Node("lambda")
+            lambda_node = Node("lambda")
             child = root.children.pop(1)
-            lambdaNode.children.append(child)
-            currentNode.children.append(lambdaNode)
-            currentNode = lambdaNode
+            lambda_node.children.append(child)
+            current_node.children.append(lambda_node)
+            current_node = lambda_node
 
-        currentNode.children.append(expression)
+        current_node.children.append(expression)
 
     elif root.value == "within" and root.children[0].value == root.children[1].value == "=":
         child_0 = root.children[1].children[0]
@@ -72,11 +76,11 @@ def standardize(root):
         expression = root.children.pop(0)
         identifier = root.children[0]
 
-        gammaNode = Node("gamma")
-        gammaNode.children.append(identifier)
-        gammaNode.children.append(expression)
+        gamma_node = Node("gamma")
+        gamma_node.children.append(identifier)
+        gamma_node.children.append(expression)
 
-        root.children[0] = gammaNode
+        root.children[0] = gamma_node
 
         root.value = "gamma"
 
@@ -99,20 +103,21 @@ def standardize(root):
         temp = root.children.pop()
         temp.value = "lambda"
 
-        gammaNode = Node("gamma")
-        gammaNode.children.append(Node("<Y*>"))
-        gammaNode.children.append(temp)
+        gamma_node = Node("gamma")
+        gamma_node.children.append(Node("<Y*>"))
+        gamma_node.children.append(temp)
 
         root.children.append(temp.children[0])
-        root.children.append(gammaNode)
+        root.children.append(gamma_node)
 
         root.value = "="
 
     return root
 
-prog_file = input()
 
-ast = parse(prog_file)
-st = standardize(ast)
+'''
+prog_file = input()
+st = standardize(prog_file)
 
 preorder_traversal(st)
+'''
