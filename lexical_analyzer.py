@@ -47,7 +47,7 @@ def tokenize(characters):
                     if characters[i] in digits:
                         current_token += characters[i]
                         i += 1
-                    if characters[i] in letters:
+                    elif characters[i] in letters:
                         current_token += characters[i]
                         i += 1
                     else:
@@ -189,7 +189,7 @@ def tokenize(characters):
 
     for i in range(number_of_tokens):
         if i == 0:
-            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], None, token_names[i+1])
+            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i])
             tokens[i].make_first_token()
         elif i == number_of_tokens - 1:
             
@@ -200,10 +200,10 @@ def tokenize(characters):
                 token_names.remove(token_names[i])
                 line_numbers.remove(line_numbers[i])
             else:
-                tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], None)
+                tokens[i] = Token(tokens[i], token_names[i], line_numbers[i])
                 tokens[i].make_last_token()
 
         else:
-            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i], token_names[i-1], token_names[i+1])
+            tokens[i] = Token(tokens[i], token_names[i], line_numbers[i])
             
     return tokens  

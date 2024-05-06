@@ -1,24 +1,55 @@
-let <KEYWORD> False
-f <IDENTIFIER> False
-( ( False
-x <IDENTIFIER> False
-, , False
-y <IDENTIFIER> False
-, , False
-z <IDENTIFIER> False
-) ) False
-= <OPERATOR> False
-x <IDENTIFIER> False
-+ <OPERATOR> False
-y <IDENTIFIER> False
-+ <OPERATOR> False
-z <IDENTIFIER> False
-in <KEYWORD> False
-f <IDENTIFIER> False
-( ( False
-1 <INTEGER> False
-, , False
-2 <INTEGER> False
-, , False
-3 <INTEGER> False
-) ) True
+let <KEYWORD>
+Sum <IDENTIFIER>
+( (
+A <IDENTIFIER>
+) )
+= <OPERATOR>
+Psum <IDENTIFIER>
+( (
+A <IDENTIFIER>
+, ,
+Order <IDENTIFIER>
+A <IDENTIFIER>
+) )
+where <KEYWORD>
+rec <KEYWORD>
+Psum <IDENTIFIER>
+( (
+T <IDENTIFIER>
+, ,
+N <IDENTIFIER>
+) )
+= <OPERATOR>
+N <IDENTIFIER>
+eq <KEYWORD>
+0 <INTEGER>
+-> <OPERATOR>
+0 <INTEGER>
+| <OPERATOR>
+Psum <IDENTIFIER>
+( (
+T <IDENTIFIER>
+, ,
+N <IDENTIFIER>
+- <OPERATOR>
+1 <INTEGER>
+) )
++ <OPERATOR>
+T <IDENTIFIER>
+N <IDENTIFIER>
+in <KEYWORD>
+Print <IDENTIFIER>
+( (
+Sum <IDENTIFIER>
+( (
+1 <INTEGER>
+, ,
+2 <INTEGER>
+, ,
+3 <INTEGER>
+, ,
+4 <INTEGER>
+, ,
+5 <INTEGER>
+) )
+) )

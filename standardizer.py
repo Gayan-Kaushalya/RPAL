@@ -12,6 +12,13 @@ def make_standardized_tree(root):
         make_standardized_tree(child)
 
     if root.value == "let" and root.children[0].value == "=":
+        '''
+                 let                gamma
+                /   \               /    \    
+               =     P   =>       lambda  E               
+              / \                /     \
+             X   E              X       P
+        '''
         child_0 = root.children[0]
         child_1 = root.children[1]
 
@@ -21,8 +28,15 @@ def make_standardized_tree(root):
         root.value = "gamma"
 
     elif root.value == "where" and root.children[1].value == "=":
-        child_0 = root.children[0] #p
-        child_1 = root.children[1] #=
+        '''
+                 where                gamma 
+                 /   \                /    \
+                E     P     =>      lambda  E
+                     / \             /  \
+                    X   E           X    P
+        '''
+        child_0 = root.children[0] 
+        child_1 = root.children[1] 
 
         root.children[0] = child_1.children[1]
         root.children[1].children[1] = child_0
@@ -31,6 +45,13 @@ def make_standardized_tree(root):
         root.value = "gamma"
 
     elif root.value == "function_form":
+        '''
+                 function_form                  =
+                 /   |    \                    / \
+                P    V+    E     =>           P   +lambda
+                                                   /   \
+                                                  V    .E                  
+        '''
         expression = root.children.pop()
 
         current_node = root
@@ -42,7 +63,6 @@ def make_standardized_tree(root):
             current_node = lambda_node
 
         current_node.children.append(expression)
-
         root.value = "="
 
     elif root.value == "gamma" and len(root.children) > 2:
@@ -59,6 +79,15 @@ def make_standardized_tree(root):
         current_node.children.append(expression)
 
     elif root.value == "within" and root.children[0].value == root.children[1].value == "=":
+        '''
+                    within                =
+                    /    \               / \
+                   =      =     =>      X2   gamma
+                  / \    / \                 /   \
+                 X1  E1  X2 E2            lambda  E1 
+                                          /    \
+                                         X1    E2    
+        '''
         child_0 = root.children[1].children[0]
         child_1 = Node("gamma")
 
@@ -69,10 +98,16 @@ def make_standardized_tree(root):
 
         root.children[0] = child_0
         root.children[1] = child_1
-
         root.value = "="
 
     elif root.value == "@":
+        '''
+                    @                gamma
+                  / | \              /   \
+                E1  N  E2    =>    gamma  E2
+                                   /   \
+                                  N     E1
+        '''                
         expression = root.children.pop(0)
         identifier = root.children[0]
 
@@ -85,6 +120,14 @@ def make_standardized_tree(root):
         root.value = "gamma"
 
     elif root.value == "and":
+        '''
+                    and             =
+                     |             / \
+                    =++    =>     ,   tau
+                    / \           |    |
+                   X   E         X++  E++
+                
+        '''
         child_0 = Node(",")
         child_1 = Node("tau")
 
@@ -100,6 +143,15 @@ def make_standardized_tree(root):
         root.value = "="
 
     elif root.value == "rec":
+        '''
+                    rec             =
+                     |             / \
+                     =     =>     X   gamma
+                    / \               /   \
+                   X   E            Ystar lambda
+                                          /    \
+                                         X      E
+        '''
         temp = root.children.pop()
         temp.value = "lambda"
 

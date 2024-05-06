@@ -51,13 +51,7 @@ def screen(file_name):
         if token.type == "<IDENTIFIER>" and token.content in keywords:
             token.make_keyword()
         
-        if token.type == "<DELETE>" or token.content == "\n":
-            if i < len(token_list) - 1:
-                token_list[i + 1].previous_type = token.previous_type
-            
-            if i > 0:
-                token_list[i - 1].next_type = token.next_type
-            
+        if token.type == "<DELETE>" or token.content == "\n":            
             token_list.remove(token)
             
         if token.type == "<INVALID>":

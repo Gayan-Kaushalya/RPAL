@@ -5,15 +5,16 @@ from node import *
 # A stack containing nodes
 stack = Stack()
 
-# Try to change this function
 def build_tree(value, num_children):
     node = Node(value)
     node.children = [None] * num_children
     
-    for i in range (num_children - 1, -1, -1): 
+    for i in range (0, num_children):
         if stack.is_empty():
-            print("Can't build tree, stack is empty")
-        node.children[i] = stack.pop()
+            print("Stack is empty")
+            exit(1)
+        node.children[num_children - i - 1] = stack.pop()
+        
     stack.push(node)
     
 def print_tree(root):
@@ -476,7 +477,6 @@ def procedure_Vb():
 ##############################################################
 def procedure_Vl():
     # Vl -> <IDENTIFIER> (',' <IDENTIFIER>)*   
-    
     n = 0
     
     while tokens[0].content == ",":
