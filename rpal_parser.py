@@ -305,7 +305,7 @@ def procedure_R():
     while  tokens[0].type in ["<IDENTIFIER>", "<INTEGER>", "<STRING>"] or tokens[0].content in ["true", "false","nil", "(", "dummy"]: 
         procedure_Rn()
         build_tree("gamma", 2)
-    
+
 ##############################################################
 def procedure_Rn():   
     value = tokens[0].content
@@ -338,7 +338,7 @@ def procedure_Rn():
         read("(")
         procedure_E()
         
-        if tokens[0].content == ")":      
+        if tokens[0].content == ")":     
             read(")")
         else:
             print("Syntax error in line " + str(tokens[0].line) + ": ')' expected")
@@ -387,10 +387,7 @@ def procedure_Dr():
         procedure_Db()
     
 ##############################################################
-def procedure_Db():
-    # Db -> Vl '=' E   
-    #    -> <IDENTIFIER> Vb+ '=' E    
-    
+def procedure_Db():    
     value = tokens[0].content
     
     # Db -> '(' D ')'

@@ -1,12 +1,24 @@
-( (
-fn <KEYWORD>
-a <IDENTIFIER>
-. <OPERATOR>
-Print <IDENTIFIER>
-( (
-a <IDENTIFIER>
-/ <OPERATOR>
-3 <INTEGER>
-) )
-) )
-6 <INTEGER>
+let <KEYWORD> False
+f <IDENTIFIER> False
+( ( False
+x <IDENTIFIER> False
+, , False
+y <IDENTIFIER> False
+, , False
+z <IDENTIFIER> False
+) ) False
+= <OPERATOR> False
+x <IDENTIFIER> False
++ <OPERATOR> False
+y <IDENTIFIER> False
++ <OPERATOR> False
+z <IDENTIFIER> False
+in <KEYWORD> False
+f <IDENTIFIER> False
+( ( False
+1 <INTEGER> False
+, , False
+2 <INTEGER> False
+, , False
+3 <INTEGER> False
+) ) True

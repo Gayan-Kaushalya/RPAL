@@ -4,7 +4,7 @@ token_list, invalid_flag, invalid_token = screen(file)
 
 with open("output.txt", "w") as file:
     for token in token_list:
-        file.write(f"{token.content} {token.type}\n")
+        file.write(f"{token.content} {token.type} {token.is_last_token}\n")
         
 print(f"Invalid token present: {invalid_flag}")
 if invalid_flag:

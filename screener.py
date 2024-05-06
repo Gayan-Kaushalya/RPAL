@@ -65,5 +65,9 @@ def screen(file_name):
                 invalid_token = token
                 
             invalid_token_present = True
+            
+    # If the previous last token is romoved in the previous loop, the last token will be the last token in the list.
+    if len(token_list) > 0:
+        token_list[-1].is_last_token = True
         
     return token_list, invalid_token_present, invalid_token

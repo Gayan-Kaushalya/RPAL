@@ -26,7 +26,6 @@ Not an issue - Understand about first sets
 
 Need an example to test Ap
 
-
 problem in read
 
 problems in parser
@@ -41,8 +40,6 @@ remove previous token type and next token type
 
 Elaborate more on
 found ' = string may be 
-
-st and ast calling together creates a problem
 
 remember that you are not in main branch
 comments in standardizer
