@@ -120,12 +120,12 @@ def applyRules():
 
         #Rule 4
         elif(symbol == "gamma"):
-            stackSymbol_1 = stack.pop()
-            stackSymbol_2 = stack.pop()
+            stack_symbol_1 = stack.pop()
+            stack_symbol_2 = stack.pop()
 
-            if(type(stackSymbol_1) == str and stackSymbol_1.startswith("lambda")):
+            if(type(stack_symbol_1) == str and stack_symbol_1.startswith("lambda")):
                 currentEnvironment = len(environments)
-                lambdaData = stackSymbol_1.split("_")
+                lambdaData = stack_symbol_1.split("_")
 
                 parent = environments[int(lambdaData[3])]
                 child = EnvironmentNode(currentEnvironment, parent)
@@ -136,93 +136,100 @@ def applyRules():
                 variablesList = lambdaData[2].split(",")
                 if(len(variablesList)>1):
                     for i in range(len(variablesList)):
-                        child.addVariable(variablesList[i],stackSymbol_2[i])
+                        child.addVariable(variablesList[i],stack_symbol_2[i])
                 else:
-                    child.addVariable(lambdaData[2],stackSymbol_2)
+                    child.addVariable(lambdaData[2],stack_symbol_2)
 
                 stack.append(child.name)
                 control.append(child.name)
                 control += controlStructures[int(lambdaData[1])]
 
             #Rule 10
-            elif(type(stackSymbol_1) == tuple):
-                stack.append(stackSymbol_1[stackSymbol_2-1])
+            elif(type(stack_symbol_1) == tuple):
+                stack.append(stack_symbol_1[stack_symbol_2-1])
 
             #Rule 12
-            elif(stackSymbol_1 == "Y*"):
-                temp = "eta" + stackSymbol_2[6:]
+            elif(stack_symbol_1 == "Y*"):
+                temp = "eta" + stack_symbol_2[6:]
                 stack.append(temp)
 
             #Rule 13
-            elif(type(stackSymbol_1) == str and stackSymbol_1.startswith("eta")):
-                temp = "lambda" + stackSymbol_1[3:]
+            elif(type(stack_symbol_1) == str and stack_symbol_1.startswith("eta")):
+                temp = "lambda" + stack_symbol_1[3:]
                 control.append("gamma")
                 control.append("gamma")
-                stack.append(stackSymbol_2)
-                stack.append(stackSymbol_1)
+                stack.append(stack_symbol_2)
+                stack.append(stack_symbol_1)
                 stack.append(temp)
 
             #built in
-            elif(stackSymbol_1 == "Order"):
-                order = len(stackSymbol_2)
+            elif(stack_symbol_1 == "Order"):
+                order = len(stack_symbol_2)
                 stack.append(order)
 
-            elif(stackSymbol_1 == "Print" or stackSymbol_1 == "print"):
-                #print(stackSymbol_2)
-                stack.append(stackSymbol_2)
+            elif(stack_symbol_1 == "Print" or stack_symbol_1 == "print"):
+                # If there are escape characters in the string, we need to format it properly.
+                if type(stack_symbol_2) == str:
+                    if "\\n" in stack_symbol_2:
+                        stack_symbol_2 = stack_symbol_2.replace("\\n", "\n")
+                    if "\\t" in stack_symbol_2:
+                        stack_symbol_2 = stack_symbol_2.replace("\\t", "\t")
+ 
+              #  print(stack_symbol_2)
+                stack.append(stack_symbol_2)
 
-            elif(stackSymbol_1 == "Conc"):
-                stackSymbol_3 = stack.pop()
+            elif(stack_symbol_1 == "Conc"):
+                stack_symbol_3 = stack.pop()
                 control.pop()
-                temp = stackSymbol_2 + stackSymbol_3
+                temp = stack_symbol_2 + stack_symbol_3
                 stack.append(temp)
 
-            elif(stackSymbol_1 == "Stern"):
-                stack.append(stackSymbol_2[1:])
+            elif(stack_symbol_1 == "Stern"):
+                stack.append(stack_symbol_2[1:])
 
-            elif(stackSymbol_1 == "Stem"):
-                stack.append(stackSymbol_2[0])
+            elif(stack_symbol_1 == "Stem"):
+                stack.append(stack_symbol_2[0])
 
-            elif(stackSymbol_1 == "Isinteger"):
-                if(type(stackSymbol_2) == int):
+            elif(stack_symbol_1 == "Isinteger"):
+                if(type(stack_symbol_2) == int):
                     stack.append(True)
                 else:
                     stack.append(False)
                 
-            elif(stackSymbol_1 == "Istruthvalue"):
-                if(type(stackSymbol_2) == bool):
+            elif(stack_symbol_1 == "Istruthvalue"):
+                if(type(stack_symbol_2) == bool):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stackSymbol_1 == "Isstring"):
-                if(type(stackSymbol_2) == str):
+            elif(stack_symbol_1 == "Isstring"):
+                if(type(stack_symbol_2) == str):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stackSymbol_1 == "Istuple"):
-                if(type(stackSymbol_2) == tuple):
+            elif(stack_symbol_1 == "Istuple"):
+                if(type(stack_symbol_2) == tuple):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stackSymbol_1 == "Isfunction"):
-                if(stackSymbol_2 in builtInFunctions):
+            elif(stack_symbol_1 == "Isfunction"):
+                if(stack_symbol_2 in builtInFunctions):
                     return True
                 else:
                     False
 
         #Rule 5
         elif(symbol.startswith("e_")):
-            stackSymbol = stack.pop()
+            stack_symbol = stack.pop()
             stack.pop()
             if(currentEnvironment != 0):
                 for element in reversed(stack):
                     if(type(element) == str and element.startswith("e_")):
                         currentEnvironment = int(element[2:])
                         break
-            stack.append(stackSymbol)
+            stack.append(stack_symbol)
 
         #Rule 6
         elif(symbol in binop):

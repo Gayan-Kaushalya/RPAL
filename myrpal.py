@@ -5,7 +5,7 @@
 
 from rpal_parser import parse
 from node import preorder_traversal
-from standardizer import standardize
+from standardizer import *
 from csemachine import *
 import sys
 
@@ -40,13 +40,21 @@ if __name__ == "__main__":
                     preorder_traversal(ast)
                     
                     print()
+                    
+                    if "-st" in switches:
+                        st = make_standardized_tree(ast)
+                        preorder_traversal(st)
+                        
+                        print() 
+                        exit()
                 
                 # If '-st' is in the switches, we must print the standardized tree.    
-                if "-st" in switches:
+                elif "-st" in switches:
                     st = standardize(file_name)  
                     preorder_traversal(st)
                     
                     print()
+                    exit()
             
             else:
                 print("Wrong command. Make sure the command is in the following format. \n ./myrpal.py [-l] [-ast] [-st] filename")

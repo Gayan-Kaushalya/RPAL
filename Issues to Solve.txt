@@ -50,3 +50,5 @@ comments in standardizer
 <true><false><nil>
 
 integer division
+
+checking type in cse machine
