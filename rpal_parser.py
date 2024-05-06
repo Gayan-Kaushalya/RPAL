@@ -331,7 +331,7 @@ def procedure_Rn():
     #    -> 'dummy'    
     elif value in ["true", "false", "nil", "dummy"]:
         read(value)
-        build_tree(value, 0)
+        build_tree("<" + value + ">", 0)
       
     # Rn -> '(' E ')'    
     elif value == "(":

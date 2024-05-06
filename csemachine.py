@@ -86,8 +86,14 @@ def lookup(name):
         if (variable in builtInFunctions):
             return variable
         else:
-            value = environments[currentEnvironment].variables[variable]
-            return value
+            try:
+                value = environments[currentEnvironment].variables[variable]
+            except KeyError:
+                print("Undeclared Identifier: " + variable)
+                exit(1)
+            else:
+                return value
+            
     elif(name.startswith("Y*", 1)):
         return "Y*"
     elif(name.startswith("nil", 1)):
@@ -112,7 +118,7 @@ def applyRules():
 
         #Rule 1
         if(symbol.startswith("<") and symbol.endswith(">")):
-            stack.append(lookup(symbol))
+                stack.append(lookup(symbol))
 
         #Rule 2
         elif(symbol.startswith("lambda")):
