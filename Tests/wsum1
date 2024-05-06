@@ -3,14 +3,14 @@ let WS IS = PWS IS 1 0
     rec PWS IS I L = 
        not (Istuple IS)
 	 -> Isinteger IS -> IS * L
-			 |  ''error''
+			 |  'error'
          |  I gr Order IS
 	     -> 0
 	     |  Add ( PWS IS (I+1) L )
 		    ( PWS (IS I) 1 (L+1) )
                 where Add x y =
 		  Isstring x or Isstring y
-		    -> ''error''
+		    -> 'error'
 		    |  x + y
       
 in Print (

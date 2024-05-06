@@ -4,8 +4,6 @@ How to identify strings, single or double quotations? Mention our way in report
 
 lexical analyzer line 177
 
-Should run from the kernel
-
 report
 
 Makefile
@@ -20,8 +18,6 @@ problem in vb
 
 210314 as three integers
 
-error handling sentences are not correct
-
 fn part in E()
 problem in T()
 error in vb+
@@ -35,8 +31,7 @@ problem in read
 
 problems in parser
 
-change the standardizer file
-remove addChild function
+change the csemachine
 
 put github link in the report
 
@@ -45,5 +40,15 @@ failing test cases
 remove previous token type and next token type
 
 Elaborate more on
-file not found = maybe you are using flags in the wrong Order
 found ' = string may be 
+
+st and ast calling together creates a problem
+
+remember that you are not in main branch
+comments in standardizer
+
+<true><false><nil>
+
+integer division
+
+checking type in cse machine
