@@ -110,6 +110,10 @@ def apply_rules():
     global print_present
 
     while(len(control) > 0):
+        print(control)
+        print(stack)
+        print('\n')
+        
         symbol = control.pop()
 
         # Rule 1
@@ -261,6 +265,7 @@ def apply_rules():
             rand_1 = stack.pop()
             rand_2 = stack.pop()
             if (symbol == "+"):
+                print(rand_1, rand_2)
                 stack.append(rand_1+rand_2)
             elif (symbol == "-"):
                 stack.append(rand_1-rand_2)
@@ -313,11 +318,11 @@ def apply_rules():
         # Rule 9
         elif (symbol.startswith("tau_")):
             n = int(symbol.split("_")[1])
-            tauList = []
+            tau_list = []
             for i in range(n):
-                tauList.append(stack.pop())
-            tauTuple = tuple(tauList)
-            stack.append(tauTuple)
+                tau_list.append(stack.pop())
+            tau_tuple = tuple(tau_list)
+            stack.append(tau_tuple)
 
         elif (symbol == "Y*"):
             stack.append(symbol)
