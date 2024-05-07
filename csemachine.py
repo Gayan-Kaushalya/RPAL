@@ -13,7 +13,7 @@ class EnvironmentNode(object):
     def addVariable(self, key, value):
         self.variables[key] = value
 
-controlStructures = []
+control_structures = []
 count = 0
 control = []
 stack = []
@@ -22,52 +22,54 @@ currentEnvironment = 0
 builtInFunctions = ["Order", "Print", "print", "Conc", "Stern", "Stem", "Isinteger", "Istruthvalue", "Isstring", "Istuple", "Isfunction"]
 
 
-def generateControlStructure(root, i):
-    global controlStructures
+def generate_control_structure(root, i):
+    # We need to keep track of 
     global count
     
-    while(len(controlStructures) <= i):
-        controlStructures.append([])
+    while(len(control_structures) <= i):
+        control_structures.append([])
 
+    # 
     if (root.value == "lambda"):
         count += 1
-        leftChild = root.children[0]
-        if(leftChild.value == ","):
+        left_child = root.children[0]
+        
+        if (left_child.value == ","):
             temp = "lambda" + "_" + str(count) + "_"
-            for child in leftChild.children:
+            for child in left_child.children:
                 temp += child.value[4:-1] + ","
             temp = temp[:-1]
-            controlStructures[i].append(temp)
+            control_structures[i].append(temp)
         else:
-            temp = "lambda" + "_" + str(count) + "_" + leftChild.value[4:-1]
-            controlStructures[i].append(temp)
+            temp = "lambda" + "_" + str(count) + "_" + left_child.value[4:-1]
+            control_structures[i].append(temp)
 
         for child in root.children[1:]:
-            generateControlStructure(child, count)
+            generate_control_structure(child, count)
 
     elif (root.value == "->"):
         count += 1
         temp = "delta" + "_" + str(count)
-        controlStructures[i].append(temp)
-        generateControlStructure(root.children[1], count)
+        control_structures[i].append(temp)
+        generate_control_structure(root.children[1], count)
         count += 1
         temp = "delta" + "_" + str(count)
-        controlStructures[i].append(temp)
-        generateControlStructure(root.children[2], count)
-        controlStructures[i].append("beta")
-        generateControlStructure(root.children[0], i)
+        control_structures[i].append(temp)
+        generate_control_structure(root.children[2], count)
+        control_structures[i].append("beta")
+        generate_control_structure(root.children[0], i)
 
     elif(root.value == "tau"):
         n = len(root.children)
         temp = "tau" + "_" + str(n)
-        controlStructures[i].append(temp)
+        control_structures[i].append(temp)
         for child in root.children:
-            generateControlStructure(child, i)
+            generate_control_structure(child, i)
 
     else:
-        controlStructures[i].append(root.value)
+        control_structures[i].append(root.value)
         for child in root.children:
-            generateControlStructure(child, i)
+            generate_control_structure(child, i)
 
 
 
@@ -148,7 +150,7 @@ def applyRules():
 
                 stack.append(child.name)
                 control.append(child.name)
-                control += controlStructures[int(lambdaData[1])]
+                control += control_structures[int(lambdaData[1])]
 
             #Rule 10
             elif(type(stack_symbol_1) == tuple):
@@ -287,9 +289,9 @@ def applyRules():
             deltaElse = control.pop()
             deltaThen = control.pop()
             if(B):
-                control += controlStructures[int(deltaThen.split('_')[1])]
+                control += control_structures[int(deltaThen.split('_')[1])]
             else:
-                control += controlStructures[int(deltaElse.split('_')[1])]
+                control += control_structures[int(deltaElse.split('_')[1])]
 
         #Rule 9
         elif(symbol.startswith("tau_")):
@@ -309,10 +311,10 @@ def get_result(file_name):
 
     st = standardize(file_name)
     
-    generateControlStructure(st,0) 
+    generate_control_structure(st,0) 
 
     control.append(environments[0].name)
-    control += controlStructures[0]
+    control += control_structures[0]
 
     stack.append(environments[0].name)
 
