@@ -1,39 +1,40 @@
 from standardizer import standardize
 from node import *
 
-class EnvironmentNode(object):
-    def __init__(self, number, parent):
+class Environment(object):
+    def __init__(self, number, parent_environment):
         self.name = "e_" + str(number)
         self.variables = {}
         self.children = []
-        self.parent = parent
-    def addChild(self, node):
+        self.parent_environment = parent_environment
+    def add_child(self, node):
         self.children.append(node)
         node.variables.update(self.variables)
-    def addVariable(self, key, value):
+    def add_variable(self, key, value):
         self.variables[key] = value
 
 control_structures = []
-count = 0
+count = 0                  # This is the control structure number.
 control = []
 stack = []
-environments = [EnvironmentNode(0, None)]
-currentEnvironment = 0
+environments = [Environment(0, None)]
+current_environment = 0
 builtInFunctions = ["Order", "Print", "print", "Conc", "Stern", "Stem", "Isinteger", "Istruthvalue", "Isstring", "Istuple", "Isfunction"]
 
 
 def generate_control_structure(root, i):
-    # We need to keep track of 
+    # We need to keep track of the control structure number.
     global count
     
     while(len(control_structures) <= i):
         control_structures.append([])
 
-    # 
+    # When we encounter a lambda, we have to we have to create a new environment.
     if (root.value == "lambda"):
         count += 1
         left_child = root.children[0]
         
+        # If the lambda has multiple arguments, we need to handle them differently.
         if (left_child.value == ","):
             temp = "lambda" + "_" + str(count) + "_"
             for child in left_child.children:
@@ -42,6 +43,8 @@ def generate_control_structure(root, i):
             control_structures[i].append(temp)
         else:
             temp = "lambda" + "_" + str(count) + "_" + left_child.value[4:-1]
+        #    print(temp)
+          #  temp = "[lambda closure: " + left_child.value[4:-1] + "]"
             control_structures[i].append(temp)
 
         for child in root.children[1:]:
@@ -76,81 +79,94 @@ def generate_control_structure(root, i):
 
 
 def lookup(name):
-    global environments
-    global builtInFunctions
-    global stack
-    if(name.startswith("INT", 1)):
+    if name[1:4] == "INT":
         return int(name[5:-1])
-    elif(name.startswith("STR", 1)):
+    
+    elif name[1:4] == "STR":
         return name[5:-1].strip("'")
-    elif(name.startswith("ID", 1)):
+    
+    elif name[1:3] == "ID":
         variable = name[4:-1]
+        
         if (variable in builtInFunctions):
             return variable
         else:
             try:
-                value = environments[currentEnvironment].variables[variable]
+                value = environments[current_environment].variables[variable]
             except KeyError:
                 print("Undeclared Identifier: " + variable)
                 exit(1)
             else:
                 return value
             
-    elif(name.startswith("Y*", 1)):
+    elif name[1:3] == "Y*":
         return "Y*"
-    elif(name.startswith("nil", 1)):
+    
+    elif name[1:4] == "nil":
         return ()
-    elif(name.startswith("true", 1)):
+    
+    elif name[1:5] == "true":
         return True
-    elif(name.startswith("false", 1)):
+    
+    elif name[1:6] == "false":
         return False
+    
 
 def applyRules():
-    binop = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
-    unop = ["neg","not"]
+    op = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
+    uop = ["neg","not"]
 
     global control
-    global stack
-    global environments
-    global currentEnvironment
+    global current_environment
+    
 
-    while(len(control) > 0):  
 
+    while (len(control) > 0):  
         symbol = control.pop()
+   #     print(symbol)
 
         #Rule 1
-        if(symbol.startswith("<") and symbol.endswith(">")):
-                stack.append(lookup(symbol))
+        if (symbol[0] == "<" and symbol[-1] == ">"):
+   #         print(symbol)
+            stack.append(lookup(symbol))
 
         #Rule 2
-        elif(symbol.startswith("lambda")):
-            stack.append(symbol+"_"+str(currentEnvironment))
+        elif (symbol.startswith("lambda")):
+            stack.append(symbol+"_"+str(current_environment))
 
         #Rule 4
         elif(symbol == "gamma"):
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
-            if(type(stack_symbol_1) == str and stack_symbol_1.startswith("lambda")):
-                currentEnvironment = len(environments)
-                lambdaData = stack_symbol_1.split("_")
+############# watch for this
+            if stack_symbol_1[:6] == "lambda":
+                current_environment = len(environments)
+                
+                lambda_info = stack_symbol_1.split("_")
+                lambda_number = int(lambda_info[1])            #
+                bounded_variable = lambda_info[2]              # Variable bouonded to lambda
+                environment_number = int(lambda_info[3])       #
 
-                parent = environments[int(lambdaData[3])]
-                child = EnvironmentNode(currentEnvironment, parent)
-                parent.addChild(child)
+                parent_environment = environments[environment_number]
+                child = Environment(current_environment, parent_environment)
+                parent_environment.add_child(child)
                 environments.append(child)
 
                 #Rule 11
-                variablesList = lambdaData[2].split(",")
-                if(len(variablesList)>1):
-                    for i in range(len(variablesList)):
-                        child.addVariable(variablesList[i],stack_symbol_2[i])
+                variable_list = bounded_variable.split(",")
+                
+                if (len(variable_list) > 1):
+                    for i in range(len(variable_list)):
+                        child.add_variable(variable_list[i], stack_symbol_2[i])
                 else:
-                    child.addVariable(lambdaData[2],stack_symbol_2)
+                    child.add_variable(bounded_variable, stack_symbol_2)
+                    
+       #         print(child.variables)
 
                 stack.append(child.name)
                 control.append(child.name)
-                control += control_structures[int(lambdaData[1])]
+                control += control_structures[int(lambda_number)]
 
             #Rule 10
             elif(type(stack_symbol_1) == tuple):
@@ -229,18 +245,19 @@ def applyRules():
                     False
 
         #Rule 5
-        elif(symbol.startswith("e_")):
+        elif (symbol.startswith("e_")):
             stack_symbol = stack.pop()
             stack.pop()
-            if(currentEnvironment != 0):
+            
+            if(current_environment != 0):
                 for element in reversed(stack):
                     if(type(element) == str and element.startswith("e_")):
-                        currentEnvironment = int(element[2:])
+                        current_environment = int(element[2:])
                         break
             stack.append(stack_symbol)
 
         #Rule 6
-        elif(symbol in binop):
+        elif(symbol in op):
             rand_1 = stack.pop()
             rand_2 = stack.pop()
             if(symbol == "+"):
@@ -276,7 +293,7 @@ def applyRules():
                     stack.append(rand_1+(rand_2,))
 
         #Rule 7
-        elif(symbol in unop):
+        elif(symbol in uop):
             rand = stack.pop()
             if(symbol == "not"):
                 stack.append(not rand)
@@ -286,25 +303,30 @@ def applyRules():
         #Rule 8
         elif(symbol == "beta"):
             B = stack.pop()
-            deltaElse = control.pop()
-            deltaThen = control.pop()
+            delta_else = control.pop()
+            delta_then = control.pop()
             if(B):
-                control += control_structures[int(deltaThen.split('_')[1])]
+                control += control_structures[int(delta_then.split('_')[1])]
             else:
-                control += control_structures[int(deltaElse.split('_')[1])]
+                control += control_structures[int(delta_else.split('_')[1])]
 
         #Rule 9
         elif(symbol.startswith("tau_")):
             n = int(symbol.split("_")[1])
-            tauList = []
+            tau_list = []
             for i in range(n):
-                tauList.append(stack.pop())
-            tauTuple = tuple(tauList)
-            stack.append(tauTuple)
+                tau_list.append(stack.pop())
+            tau_tuple = tuple(tau_list)
+            stack.append(tau_tuple)
 
         elif(symbol == "Y*"):
             stack.append(symbol)
 
+    # Lambda expression becomes a lambda closure when its environment is determined.
+    if stack[0][:7] == "lambda_":
+        lambda_info = stack[0].split("_")
+        
+        stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
 
 def get_result(file_name):
     global control
@@ -312,9 +334,12 @@ def get_result(file_name):
     st = standardize(file_name)
     
     generate_control_structure(st,0) 
-
+ #   print(control_structures)
+   # print(environments)
     control.append(environments[0].name)
+ #   print(environments[0].name)
     control += control_structures[0]
+  #  print(control)
 
     stack.append(environments[0].name)
 
