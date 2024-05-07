@@ -332,15 +332,24 @@ def apply_rules():
         lambda_info = stack[0].split("_")
         
         stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
+         
+    if type(stack[0]) == tuple:
+        # The rpal.exe program does not print the comma when there is only one element in the tuple.
+        # Our code must emulate this behaviour.  
+        if len(stack[0]) == 1:
+            stack[0] = "(" + str(stack[0][0]) + ")"
         
-    # The rpal.exe program does not print inverted commas even when there are multiple stings in a tuple.
-    # Our code must emulate this behaviour.    
-    if type(stack[0]) == tuple and type(stack[0][0]) == str:
-        temp = "("
-        for element in stack[0]:
-            temp += element + ", "
-        temp = temp[:-2] + ")"
-        stack[0] = temp
+        # The rpal.exe program does not print inverted commas when all the elements in the tuple are strings.
+        # Our code must emulate this behaviour too. 
+        else: 
+            if all(type(element) == str for element in stack[0]):
+                temp = "("
+                for element in stack[0]:
+                    temp += element + ", "
+                temp = temp[:-2] + ")"
+                stack[0] = temp
+        
+    
 
 def get_result(file_name):
     global control
