@@ -130,6 +130,11 @@ def apply_rules():
                 current_environment = len(environments)
                 lambda_data = stack_symbol_1.split("_")
                 
+                # In some cases, there may be prases like 'lambda_2_Rec_F_0'. We need to handle this case.
+                if (len(lambda_data) > 4):
+                    temp = "_".join(lambda_data[2:-1])
+                    lambda_data = [lambda_data[0], lambda_data[1], temp, lambda_data[-1]]
+                
                 lambda_number = int(lambda_data[1])
                 bounded_variable = lambda_data[2]
                 parent_environment_number = int(lambda_data[3])
@@ -338,6 +343,8 @@ def get_result(file_name):
     st = standardize(file_name)
     
     generate_control_structure(st,0) 
+    print(control_structures)
+    
     control.append(environments[0].name)
     control += control_structures[0]
 
