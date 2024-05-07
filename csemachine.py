@@ -2,19 +2,19 @@ from standardizer import standardize
 from node import *
 
 class Environment(object):
-    def __init__(self, number, parent_environment):
+    def __init__(self, number, parent):
         self.name = "e_" + str(number)
         self.variables = {}
         self.children = []
-        self.parent_environment = parent_environment
+        self.parent = parent
     def add_child(self, node):
         self.children.append(node)
         node.variables.update(self.variables)
-    def add_variable(self, key, value):
+    def addVariable(self, key, value):
         self.variables[key] = value
 
 control_structures = []
-count = 0                  # This is the control structure number.
+count = 0
 control = []
 stack = []
 environments = [Environment(0, None)]
@@ -24,19 +24,16 @@ print_present = False
 
 
 def generate_control_structure(root, i):
-    # We need to keep track of the control structure number.
+    global control_structures
     global count
     
     while(len(control_structures) <= i):
         control_structures.append([])
 
-    # When we encounter a lambda, we have to we have to create a new environment.
     if (root.value == "lambda"):
         count += 1
         left_child = root.children[0]
-        
-        # If the lambda has multiple arguments, we need to handle them differently.
-        if (left_child.value == ","):
+        if(left_child.value == ","):
             temp = "lambda" + "_" + str(count) + "_"
             for child in left_child.children:
                 temp += child.value[4:-1] + ","
@@ -75,15 +72,15 @@ def generate_control_structure(root, i):
 
 
 def lookup(name):
-    if name[1:4] == "INT":
+    global environments
+    global builtInFunctions
+    global stack
+    if(name.startswith("INT", 1)):
         return int(name[5:-1])
-    
-    elif name[1:4] == "STR":
+    elif(name.startswith("STR", 1)):
         return name[5:-1].strip("'")
-    
-    elif name[1:3] == "ID":
+    elif(name.startswith("ID", 1)):
         variable = name[4:-1]
-        
         if (variable in builtInFunctions):
             return variable
         else:
@@ -95,18 +92,14 @@ def lookup(name):
             else:
                 return value
             
-    elif name[1:3] == "Y*":
+    elif(name.startswith("Y*", 1)):
         return "Y*"
-    
-    elif name[1:4] == "nil":
+    elif(name.startswith("nil", 1)):
         return ()
-    
-    elif name[1:5] == "true":
+    elif(name.startswith("true", 1)):
         return True
-    
-    elif name[1:6] == "false":
+    elif(name.startswith("false", 1)):
         return False
-    
 
 def apply_rules():
     op = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
@@ -116,7 +109,7 @@ def apply_rules():
     global current_environment
     global print_present
 
-    while (len(control) > 0):  
+    while(len(control) > 0):
         symbol = control.pop()
 
         # Rule 1
@@ -133,18 +126,17 @@ def apply_rules():
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
-############# watch for this
-            if stack_symbol_1[:6] == "lambda":
+            if(type(stack_symbol_1) == str and stack_symbol_1.startswith("lambda")):
                 current_environment = len(environments)
+                lambda_data = stack_symbol_1.split("_")
                 
-                lambda_info = stack_symbol_1.split("_")
-                lambda_number = int(lambda_info[1])            #
-                bounded_variable = lambda_info[2]              # Variable bouonded to lambda
-                environment_number = int(lambda_info[3])       #
+                lambda_number = int(lambda_data[1])
+                bounded_variable = lambda_data[2]
+                parent_environment_number = int(lambda_data[3])
 
-                parent_environment = environments[environment_number]
-                child = Environment(current_environment, parent_environment)
-                parent_environment.add_child(child)
+                parent = environments[parent_environment_number]
+                child = Environment(current_environment, parent)
+                parent.add_child(child)
                 environments.append(child)
 
                 # Rule 11
@@ -316,11 +308,11 @@ def apply_rules():
         # Rule 9
         elif (symbol.startswith("tau_")):
             n = int(symbol.split("_")[1])
-            tau_list = []
+            tauList = []
             for i in range(n):
-                tau_list.append(stack.pop())
-            tau_tuple = tuple(tau_list)
-            stack.append(tau_tuple)
+                tauList.append(stack.pop())
+            tauTuple = tuple(tauList)
+            stack.append(tauTuple)
 
         elif (symbol == "Y*"):
             stack.append(symbol)
