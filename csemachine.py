@@ -1,76 +1,74 @@
 from standardizer import standardize
 from node import *
 
-class EnvironmentNode(object):
+class Environment(object):
     def __init__(self, number, parent):
         self.name = "e_" + str(number)
         self.variables = {}
         self.children = []
         self.parent = parent
-    def addChild(self, node):
+    def add_child(self, node):
         self.children.append(node)
         node.variables.update(self.variables)
     def addVariable(self, key, value):
         self.variables[key] = value
 
-controlStructures = []
+control_structures = []
 count = 0
 control = []
 stack = []
-environments = [EnvironmentNode(0, None)]
-currentEnvironment = 0
-builtInFunctions = ["Order", "Print", "print", "Conc", "Stern", "Stem", "Isinteger", "Istruthvalue", "Isstring", "Istuple", "Isfunction"]
+environments = [Environment(0, None)]
+current_environment = 0
+builtInFunctions = ["Order", "Print", "print", "Conc", "Stern", "Stem", "Isinteger", "Istruthvalue", "Isstring", "Istuple", "Isfunction", "ItoS"]
+print_present = False
 
 
-def generateControlStructure(root, i):
-    global controlStructures
+def generate_control_structure(root, i):
+    global control_structures
     global count
     
-    while(len(controlStructures) <= i):
-        controlStructures.append([])
+    while(len(control_structures) <= i):
+        control_structures.append([])
 
     if (root.value == "lambda"):
         count += 1
-        leftChild = root.children[0]
-        if(leftChild.value == ","):
+        left_child = root.children[0]
+        if(left_child.value == ","):
             temp = "lambda" + "_" + str(count) + "_"
-            for child in leftChild.children:
+            for child in left_child.children:
                 temp += child.value[4:-1] + ","
             temp = temp[:-1]
-            controlStructures[i].append(temp)
+            control_structures[i].append(temp)
         else:
-            temp = "lambda" + "_" + str(count) + "_" + leftChild.value[4:-1]
-            controlStructures[i].append(temp)
+            temp = "lambda" + "_" + str(count) + "_" + left_child.value[4:-1]
+            control_structures[i].append(temp)
 
         for child in root.children[1:]:
-            generateControlStructure(child, count)
+            generate_control_structure(child, count)
 
     elif (root.value == "->"):
         count += 1
         temp = "delta" + "_" + str(count)
-        controlStructures[i].append(temp)
-        generateControlStructure(root.children[1], count)
+        control_structures[i].append(temp)
+        generate_control_structure(root.children[1], count)
         count += 1
         temp = "delta" + "_" + str(count)
-        controlStructures[i].append(temp)
-        generateControlStructure(root.children[2], count)
-        controlStructures[i].append("beta")
-        generateControlStructure(root.children[0], i)
+        control_structures[i].append(temp)
+        generate_control_structure(root.children[2], count)
+        control_structures[i].append("beta")
+        generate_control_structure(root.children[0], i)
 
-    elif(root.value == "tau"):
+    elif (root.value == "tau"):
         n = len(root.children)
         temp = "tau" + "_" + str(n)
-        controlStructures[i].append(temp)
+        control_structures[i].append(temp)
         for child in root.children:
-            generateControlStructure(child, i)
+            generate_control_structure(child, i)
 
     else:
-        controlStructures[i].append(root.value)
+        control_structures[i].append(root.value)
         for child in root.children:
-            generateControlStructure(child, i)
-
-
-
+            generate_control_structure(child, i)
 
 
 def lookup(name):
@@ -87,7 +85,7 @@ def lookup(name):
             return variable
         else:
             try:
-                value = environments[currentEnvironment].variables[variable]
+                value = environments[current_environment].variables[variable]
             except KeyError:
                 print("Undeclared Identifier: " + variable)
                 exit(1)
@@ -103,64 +101,68 @@ def lookup(name):
     elif(name.startswith("false", 1)):
         return False
 
-def applyRules():
-    binop = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
-    unop = ["neg","not"]
+def apply_rules():
+    op = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
+    uop = ["neg","not"]
 
     global control
-    global stack
-    global environments
-    global currentEnvironment
+    global current_environment
+    global print_present
 
-    while(len(control) > 0):  
-
+    while(len(control) > 0):
         symbol = control.pop()
 
-        #Rule 1
-        if(symbol.startswith("<") and symbol.endswith(">")):
-                stack.append(lookup(symbol))
+        # Rule 1
+        if (symbol[0] == "<" and symbol[-1] == ">"):
+   #         print(symbol)
+            stack.append(lookup(symbol))
 
-        #Rule 2
-        elif(symbol.startswith("lambda")):
-            stack.append(symbol+"_"+str(currentEnvironment))
+        # Rule 2
+        elif (symbol.startswith("lambda")):
+            stack.append(symbol+"_"+str(current_environment))
 
-        #Rule 4
-        elif(symbol == "gamma"):
+        # Rule 4
+        elif (symbol == "gamma"):
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
             if(type(stack_symbol_1) == str and stack_symbol_1.startswith("lambda")):
-                currentEnvironment = len(environments)
-                lambdaData = stack_symbol_1.split("_")
+                current_environment = len(environments)
+                lambda_data = stack_symbol_1.split("_")
+                
+                lambda_number = int(lambda_data[1])
+                bounded_variable = lambda_data[2]
+                parent_environment_number = int(lambda_data[3])
 
-                parent = environments[int(lambdaData[3])]
-                child = EnvironmentNode(currentEnvironment, parent)
-                parent.addChild(child)
+                parent = environments[parent_environment_number]
+                child = Environment(current_environment, parent)
+                parent.add_child(child)
                 environments.append(child)
 
-                #Rule 11
-                variablesList = lambdaData[2].split(",")
-                if(len(variablesList)>1):
-                    for i in range(len(variablesList)):
-                        child.addVariable(variablesList[i],stack_symbol_2[i])
+                # Rule 11
+                variable_list = bounded_variable.split(",")
+                
+                if (len(variable_list) > 1):
+                    for i in range(len(variable_list)):
+                        child.add_variable(variable_list[i], stack_symbol_2[i])
                 else:
-                    child.addVariable(lambdaData[2],stack_symbol_2)
+                    child.add_variable(bounded_variable, stack_symbol_2)
 
                 stack.append(child.name)
                 control.append(child.name)
-                control += controlStructures[int(lambdaData[1])]
+                control += control_structures[int(lambda_number)]
 
-            #Rule 10
-            elif(type(stack_symbol_1) == tuple):
+            # Rule 10
+            elif (type(stack_symbol_1) == tuple):
                 stack.append(stack_symbol_1[stack_symbol_2-1])
 
-            #Rule 12
-            elif(stack_symbol_1 == "Y*"):
+            # Rule 12
+            elif (stack_symbol_1 == "Y*"):
                 temp = "eta" + stack_symbol_2[6:]
                 stack.append(temp)
 
-            #Rule 13
-            elif(type(stack_symbol_1) == str and stack_symbol_1.startswith("eta")):
+            # Rule 13
+            elif (type(stack_symbol_1) == str and stack_symbol_1.startswith("eta")):
                 temp = "lambda" + stack_symbol_1[3:]
                 control.append("gamma")
                 control.append("gamma")
@@ -169,11 +171,14 @@ def applyRules():
                 stack.append(temp)
 
             #built in
-            elif(stack_symbol_1 == "Order"):
+            elif (stack_symbol_1 == "Order"):
                 order = len(stack_symbol_2)
                 stack.append(order)
 
-            elif(stack_symbol_1 == "Print" or stack_symbol_1 == "print"):
+            elif (stack_symbol_1 == "Print" or stack_symbol_1 == "print"):
+                # We should print the output only when the 'Print' function is called in the program.
+                print_present = True
+                
                 # If there are escape characters in the string, we need to format it properly.
                 if type(stack_symbol_2) == str:
                     if "\\n" in stack_symbol_2:
@@ -184,115 +189,124 @@ def applyRules():
               #  print(stack_symbol_2)
                 stack.append(stack_symbol_2)
 
-            elif(stack_symbol_1 == "Conc"):
+            elif (stack_symbol_1 == "Conc"):
                 stack_symbol_3 = stack.pop()
                 control.pop()
                 temp = stack_symbol_2 + stack_symbol_3
                 stack.append(temp)
 
-            elif(stack_symbol_1 == "Stern"):
+            elif (stack_symbol_1 == "Stern"):
                 stack.append(stack_symbol_2[1:])
 
-            elif(stack_symbol_1 == "Stem"):
+            elif (stack_symbol_1 == "Stem"):
                 stack.append(stack_symbol_2[0])
 
-            elif(stack_symbol_1 == "Isinteger"):
-                if(type(stack_symbol_2) == int):
+            elif (stack_symbol_1 == "Isinteger"):
+                if (type(stack_symbol_2) == int):
                     stack.append(True)
                 else:
                     stack.append(False)
                 
-            elif(stack_symbol_1 == "Istruthvalue"):
-                if(type(stack_symbol_2) == bool):
+            elif (stack_symbol_1 == "Istruthvalue"):
+                if (type(stack_symbol_2) == bool):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stack_symbol_1 == "Isstring"):
-                if(type(stack_symbol_2) == str):
+            elif (stack_symbol_1 == "Isstring"):
+                if (type(stack_symbol_2) == str):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stack_symbol_1 == "Istuple"):
-                if(type(stack_symbol_2) == tuple):
+            elif (stack_symbol_1 == "Istuple"):
+                if (type(stack_symbol_2) == tuple):
                     stack.append(True)
                 else:
                     stack.append(False)
 
-            elif(stack_symbol_1 == "Isfunction"):
-                if(stack_symbol_2 in builtInFunctions):
+            elif (stack_symbol_1 == "Isfunction"):
+                if (stack_symbol_2 in builtInFunctions):
                     return True
                 else:
                     False
+            
+            # ItoS function converts integers to strings.        
+            elif (stack_symbol_1 == "ItoS"):
+                if (type(stack_symbol_2) == int):
+                    stack.append(str(stack_symbol_2))
+                else:
+                    print("Error: ItoS function can only accept integers.")
+                    exit()
 
-        #Rule 5
-        elif(symbol.startswith("e_")):
+        # Rule 5
+        elif (symbol.startswith("e_")):
             stack_symbol = stack.pop()
             stack.pop()
-            if(currentEnvironment != 0):
+            
+            if (current_environment != 0):
                 for element in reversed(stack):
-                    if(type(element) == str and element.startswith("e_")):
-                        currentEnvironment = int(element[2:])
+                    if (type(element) == str and element.startswith("e_")):
+                        current_environment = int(element[2:])
                         break
             stack.append(stack_symbol)
 
-        #Rule 6
-        elif(symbol in binop):
+        # Rule 6
+        elif (symbol in op):
             rand_1 = stack.pop()
             rand_2 = stack.pop()
-            if(symbol == "+"):
+            if (symbol == "+"):
                 stack.append(rand_1+rand_2)
-            elif(symbol == "-"):
+            elif (symbol == "-"):
                 stack.append(rand_1-rand_2)
-            elif(symbol == "*"):
+            elif (symbol == "*"):
                 stack.append(rand_1*rand_2)
-            elif(symbol == "/"):
+            elif (symbol == "/"):
                 stack.append(rand_1//rand_2)
-            elif(symbol == "**"):
+            elif (symbol == "**"):
                 stack.append(rand_1**rand_2)
-            elif(symbol == "gr"):
+            elif (symbol == "gr"):
                 stack.append(rand_1 > rand_2)
-            elif(symbol == "ge"):
+            elif (symbol == "ge"):
                 stack.append(rand_1 >= rand_2)
-            elif(symbol == "ls"):
+            elif (symbol == "ls"):
                 stack.append(rand_1 < rand_2)
-            elif(symbol == "le"):
+            elif (symbol == "le"):
                 stack.append(rand_1 <= rand_2)
-            elif(symbol == "eq"):
+            elif (symbol == "eq"):
                 stack.append(rand_1 == rand_2)
-            elif(symbol == "ne"):
+            elif (symbol == "ne"):
                 stack.append(rand_1 != rand_2)
-            elif(symbol == "or"):
+            elif (symbol == "or"):
                 stack.append(rand_1 or rand_2)
-            elif(symbol == "&"):
+            elif (symbol == "&"):
                 stack.append(rand_1 and rand_2)
-            elif(symbol == "aug"):
-                if(type(rand_2) == tuple):
+            elif (symbol == "aug"):
+                if (type(rand_2) == tuple):
                     stack.append(rand_1 + rand_2)
                 else:
                     stack.append(rand_1+(rand_2,))
 
-        #Rule 7
-        elif(symbol in unop):
+        # Rule 7
+        elif (symbol in uop):
             rand = stack.pop()
-            if(symbol == "not"):
+            if (symbol == "not"):
                 stack.append(not rand)
-            elif(symbol == "-"):
+            elif (symbol == "-"):
                 stack.append(-rand)
 
-        #Rule 8
-        elif(symbol == "beta"):
+        # Rule 8
+        elif (symbol == "beta"):
             B = stack.pop()
-            deltaElse = control.pop()
-            deltaThen = control.pop()
-            if(B):
-                control += controlStructures[int(deltaThen.split('_')[1])]
+            delta_else = control.pop()
+            delta_then = control.pop()
+            if (B):
+                control += control_structures[int(delta_then.split('_')[1])]
             else:
-                control += controlStructures[int(deltaElse.split('_')[1])]
+                control += control_structures[int(delta_else.split('_')[1])]
 
-        #Rule 9
-        elif(symbol.startswith("tau_")):
+        # Rule 9
+        elif (symbol.startswith("tau_")):
             n = int(symbol.split("_")[1])
             tauList = []
             for i in range(n):
@@ -300,22 +314,36 @@ def applyRules():
             tauTuple = tuple(tauList)
             stack.append(tauTuple)
 
-        elif(symbol == "Y*"):
+        elif (symbol == "Y*"):
             stack.append(symbol)
 
+    # Lambda expression becomes a lambda closure when its environment is determined.
+    if type(stack[0]) == "str" and stack[0][:7] == "lambda_":
+        lambda_info = stack[0].split("_")
+        
+        stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
+        
+    # The rpal.exe program does not print inverted commas even when there are multiple stings in a tuple.
+    # Our code must emulate this behaviour.    
+    if type(stack[0]) == tuple and type(stack[0][0]) == str:
+        temp = "("
+        for element in stack[0]:
+            temp += element + ", "
+        temp = temp[:-2] + ")"
+        stack[0] = temp
 
 def get_result(file_name):
     global control
 
     st = standardize(file_name)
     
-    generateControlStructure(st,0) 
-
+    generate_control_structure(st,0) 
     control.append(environments[0].name)
-    control += controlStructures[0]
+    control += control_structures[0]
 
     stack.append(environments[0].name)
 
-    applyRules()
+    apply_rules()
 
-    print(stack[0])
+    if print_present:
+        print(stack[0])
