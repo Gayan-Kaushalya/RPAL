@@ -10,7 +10,7 @@ class Environment(object):
     def add_child(self, node):
         self.children.append(node)
         node.variables.update(self.variables)
-    def addVariable(self, key, value):
+    def add_variable(self, key, value):
         self.variables[key] = value
 
 control_structures = []
