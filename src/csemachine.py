@@ -1,5 +1,5 @@
-from standardizer import standardize
-from node import *
+from src.standardizer import standardize
+from src.node import *
 
 class Environment(object):
     def __init__(self, number, parent):

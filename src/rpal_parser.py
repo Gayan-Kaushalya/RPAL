@@ -1,6 +1,6 @@
-from screener import screen
-from stack import Stack
-from node import *
+from src.screener import screen
+from src.stack import Stack
+from src.node import *
 
 # A stack containing nodes
 stack = Stack()

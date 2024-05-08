@@ -1,5 +1,5 @@
 
-from rpal_parser import *
+from src.rpal_parser import *
 
 def standardize(file_name):
     ast = parse(file_name)

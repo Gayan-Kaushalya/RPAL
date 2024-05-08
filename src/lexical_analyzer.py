@@ -1,4 +1,4 @@
-from rpal_token import Token
+from src.rpal_token import Token
 
 letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 digits = '0123456789'

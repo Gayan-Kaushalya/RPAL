@@ -3,10 +3,10 @@
 # The command should be in the following format:
 # ./myrpal.py [-l] [-ast] [-st] filename
 
-from rpal_parser import parse
-from node import preorder_traversal
-from standardizer import *
-from csemachine import *
+from src.rpal_parser import parse
+from src.node import preorder_traversal
+from src.standardizer import *
+from src.csemachine import *
 import sys
 
 if __name__ == "__main__":

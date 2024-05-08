@@ -1,4 +1,4 @@
-from screener import screen
+from src.screener import screen
 file = input()
 token_list, invalid_flag, invalid_token = screen(file)
 

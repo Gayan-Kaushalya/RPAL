@@ -14,15 +14,10 @@ change the csemachine
 
 put github link in the report
 
-failing test cases
-
 Elaborate more on
 found ' = string may be 
 
 checking type in cse machine
-
-What if ' is used as an aphostrophe
-Error occured while reading single integer, Checke whether it happens in test cases too
 
 stack in cse machine
 starts with

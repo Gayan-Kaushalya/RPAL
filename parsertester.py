@@ -1,4 +1,4 @@
-from rpal_parser import *
+from src.rpal_parser import *
 
 prog_file = input()
 

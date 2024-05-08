@@ -1,4 +1,4 @@
-from lexical_analyzer import tokenize
+from src.lexical_analyzer import tokenize
 
 keywords = [
     "let",
