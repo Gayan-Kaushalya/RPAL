@@ -14,6 +14,3 @@ put github link in the report
 
 Elaborate more on
 found ' = string may be 
-
-stack in cse machine
-starts with
