@@ -1,7 +1,5 @@
 How to identify strings, single or double quotations? Mention our way in report
 
-lexical analyzer line 177
-
 report
 
 Makefile
@@ -17,10 +15,5 @@ put github link in the report
 Elaborate more on
 found ' = string may be 
 
-checking type in cse machine
-
 stack in cse machine
 starts with
-
-other files in separate folder
-looks like parent and child is not needed

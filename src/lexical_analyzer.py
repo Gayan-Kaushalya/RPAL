@@ -177,10 +177,10 @@ def tokenize(characters):
                 
                 current_token = ''
 
-            ## What is this? How does this work? identifier starting with __
+            ## This will handle the case of invalid characters
             else:
-                print(f"Invalid token: {characters[i]} at position {i}")
-                i += 1
+                print(f"Invalid character: {characters[i]} at position {i}")
+                exit(1)
                   
     except IndexError:
         pass

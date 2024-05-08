@@ -1,17 +1,6 @@
 from src.standardizer import standardize
 from src.node import *
-
-class Environment(object):
-    def __init__(self, number, parent):
-        self.name = "e_" + str(number)
-        self.variables = {}
-        self.children = []
-        self.parent = parent
-    def add_child(self, node):
-        self.children.append(node)
-        node.variables.update(self.variables)
-    def add_variable(self, key, value):
-        self.variables[key] = value
+from src.environment import Environment
 
 control_structures = []
 count = 0
@@ -24,16 +13,16 @@ print_present = False
 
 
 def generate_control_structure(root, i):
-    global control_structures
     global count
     
     while(len(control_structures) <= i):
         control_structures.append([])
 
+    # When lambda is encountered, we need to generate a new control structure.
     if (root.value == "lambda"):
         count += 1
         left_child = root.children[0]
-        if(left_child.value == ","):
+        if (left_child.value == ","):
             temp = "lambda" + "_" + str(count) + "_"
             for child in left_child.children:
                 temp += child.value[4:-1] + ","
@@ -72,13 +61,11 @@ def generate_control_structure(root, i):
 
 
 def lookup(name):
-
-    
-    if(name.startswith("INT", 1)):
+    if name[1:4] == "INT":
         return int(name[5:-1])
-    elif(name.startswith("STR", 1)):
+    elif name[1:4] == "STR":
         return name[5:-1].strip("'")
-    elif(name.startswith("ID", 1)):
+    elif name[1:3] == "ID":
         variable = name[4:-1]
         if (variable in builtInFunctions):
             return variable
@@ -91,14 +78,94 @@ def lookup(name):
             else:
                 return value
             
-    elif(name.startswith("Y*", 1)):
+    elif name[1:3] == "Y*":
         return "Y*"
-    elif(name.startswith("nil", 1)):
+    elif name[1:4] == "nil":
         return ()
-    elif(name.startswith("true", 1)):
+    elif name[1:5] == "true":
         return True
-    elif(name.startswith("false", 1)):
+    elif name[1:6] == "false":
         return False
+    
+def built_in(function, argument):
+    global print_present
+    
+    # The Order function returns the length of a tuple.  
+    if (function == "Order"):
+        order = len(argument)
+        stack.append(order)
+
+    # The Print function prints the output to the command prompt.
+    elif (function == "Print" or function == "print"):
+        # We should print the output only when the 'Print' function is called in the program.
+        print_present = True
+        
+        # If there are escape characters in the string, we need to format it properly.
+        if type(argument) == str:
+            if "\\n" in argument:
+                argument = argument.replace("\\n", "\n")
+            if "\\t" in argument:
+                argument = argument.replace("\\t", "\t")
+
+        stack.append(argument)
+
+    # The Conc function concatenates two strings.
+    elif (function == "Conc"):
+        stack_symbol = stack.pop()
+        control.pop()
+        temp = argument + stack_symbol
+        stack.append(temp)
+
+    # The Stern function returns the string without the first letter.
+    elif (function == "Stern"):
+        stack.append(argument[1:])
+
+    # The Stem function returns the first letter of the given string.
+    elif (function == "Stem"):
+        stack.append(argument[0])
+
+    # The Isinteger function checks if the given argument is an integer.
+    elif (function == "Isinteger"):
+        if (type(argument) == int):
+            stack.append(True)
+        else:
+            stack.append(False)
+
+    # The Istruthvalue function checks if the given argument is a boolean value.               
+    elif (function == "Istruthvalue"):
+        if (type(argument) == bool):
+            stack.append(True)
+        else:
+            stack.append(False)
+
+    # The Isstring function checks if the given argument is a string.
+    elif (function == "Isstring"):
+        if (type(argument) == str):
+            stack.append(True)
+        else:
+            stack.append(False)
+
+    # The Istuple function checks if the given argument is a tuple.
+    elif (function == "Istuple"):
+        if (type(argument) == tuple):
+            stack.append(True)
+        else:
+            stack.append(False)
+
+    # The Isfunction function checks if the given argument is a built-in function.
+    elif (function == "Isfunction"):
+        if (argument in builtInFunctions):
+            return True
+        else:
+            False
+    
+    # The ItoS function converts integers to strings.        
+    elif (function == "ItoS"):
+        if (type(argument) == int):
+            stack.append(str(argument))
+        else:
+            print("Error: ItoS function can only accept integers.")
+            exit()
 
 def apply_rules():
     op = ["+", "-", "*", "/", "**", "gr", "ge", "ls", "le", "eq", "ne", "or", "&", "aug"]
@@ -106,7 +173,6 @@ def apply_rules():
 
     global control
     global current_environment
-    global print_present
 
     while(len(control) > 0):
      
@@ -114,11 +180,10 @@ def apply_rules():
 
         # Rule 1
         if (symbol[0] == "<" and symbol[-1] == ">"):
-   #         print(symbol)
             stack.append(lookup(symbol))
 
         # Rule 2
-        elif (symbol.startswith("lambda")):
+        elif (symbol[0:6] == "lambda"):
             stack.append(symbol+"_"+str(current_environment))
 
         # Rule 4
@@ -126,7 +191,7 @@ def apply_rules():
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
-            if(type(stack_symbol_1) == str and stack_symbol_1.startswith("lambda")):
+            if (type(stack_symbol_1) == str and stack_symbol_1[0:6] == "lambda"):
                 current_environment = len(environments)
                 lambda_data = stack_symbol_1.split("_")
                 
@@ -167,7 +232,7 @@ def apply_rules():
                 stack.append(temp)
 
             # Rule 13
-            elif (type(stack_symbol_1) == str and stack_symbol_1.startswith("eta")):
+            elif (type(stack_symbol_1) == str and stack_symbol_1[0:3] == "eta"):
                 temp = "lambda" + stack_symbol_1[3:]
                 control.append("gamma")
                 control.append("gamma")
@@ -175,83 +240,18 @@ def apply_rules():
                 stack.append(stack_symbol_1)
                 stack.append(temp)
 
-            #built in
-            elif (stack_symbol_1 == "Order"):
-                order = len(stack_symbol_2)
-                stack.append(order)
-
-            elif (stack_symbol_1 == "Print" or stack_symbol_1 == "print"):
-                # We should print the output only when the 'Print' function is called in the program.
-                print_present = True
-                
-                # If there are escape characters in the string, we need to format it properly.
-                if type(stack_symbol_2) == str:
-                    if "\\n" in stack_symbol_2:
-                        stack_symbol_2 = stack_symbol_2.replace("\\n", "\n")
-                    if "\\t" in stack_symbol_2:
-                        stack_symbol_2 = stack_symbol_2.replace("\\t", "\t")
- 
-              #  print(stack_symbol_2)
-                stack.append(stack_symbol_2)
-
-            elif (stack_symbol_1 == "Conc"):
-                stack_symbol_3 = stack.pop()
-                control.pop()
-                temp = stack_symbol_2 + stack_symbol_3
-                stack.append(temp)
-
-            elif (stack_symbol_1 == "Stern"):
-                stack.append(stack_symbol_2[1:])
-
-            elif (stack_symbol_1 == "Stem"):
-                stack.append(stack_symbol_2[0])
-
-            elif (stack_symbol_1 == "Isinteger"):
-                if (type(stack_symbol_2) == int):
-                    stack.append(True)
-                else:
-                    stack.append(False)
-                
-            elif (stack_symbol_1 == "Istruthvalue"):
-                if (type(stack_symbol_2) == bool):
-                    stack.append(True)
-                else:
-                    stack.append(False)
-
-            elif (stack_symbol_1 == "Isstring"):
-                if (type(stack_symbol_2) == str):
-                    stack.append(True)
-                else:
-                    stack.append(False)
-
-            elif (stack_symbol_1 == "Istuple"):
-                if (type(stack_symbol_2) == tuple):
-                    stack.append(True)
-                else:
-                    stack.append(False)
-
-            elif (stack_symbol_1 == "Isfunction"):
-                if (stack_symbol_2 in builtInFunctions):
-                    return True
-                else:
-                    False
-            
-            # ItoS function converts integers to strings.        
-            elif (stack_symbol_1 == "ItoS"):
-                if (type(stack_symbol_2) == int):
-                    stack.append(str(stack_symbol_2))
-                else:
-                    print("Error: ItoS function can only accept integers.")
-                    exit()
-
+            # Built-in functions
+            elif stack_symbol_1 in builtInFunctions:
+                built_in(stack_symbol_1, stack_symbol_2)
+              
         # Rule 5
-        elif (symbol.startswith("e_")):
+        elif (symbol[0:2] == "e_"):
             stack_symbol = stack.pop()
             stack.pop()
             
             if (current_environment != 0):
                 for element in reversed(stack):
-                    if (type(element) == str and element.startswith("e_")):
+                    if (type(element) == str and element[0:2] == "e_"):
                         current_environment = int(element[2:])
                         break
             stack.append(stack_symbol)
@@ -260,16 +260,16 @@ def apply_rules():
         elif (symbol in op):
             rand_1 = stack.pop()
             rand_2 = stack.pop()
-            if (symbol == "+"):
-                stack.append(rand_1+rand_2)
+            if (symbol == "+"): 
+                stack.append(rand_1 + rand_2)
             elif (symbol == "-"):
-                stack.append(rand_1-rand_2)
+                stack.append(rand_1 - rand_2)
             elif (symbol == "*"):
-                stack.append(rand_1*rand_2)
+                stack.append(rand_1 * rand_2)
             elif (symbol == "/"):
-                stack.append(rand_1//rand_2)
+                stack.append(rand_1 // rand_2)
             elif (symbol == "**"):
-                stack.append(rand_1**rand_2)
+                stack.append(rand_1 ** rand_2)
             elif (symbol == "gr"):
                 stack.append(rand_1 > rand_2)
             elif (symbol == "ge"):
@@ -290,7 +290,7 @@ def apply_rules():
                 if (type(rand_2) == tuple):
                     stack.append(rand_1 + rand_2)
                 else:
-                    stack.append(rand_1+(rand_2,))
+                    stack.append(rand_1 + (rand_2,))
 
         # Rule 7
         elif (symbol in uop):
@@ -311,7 +311,7 @@ def apply_rules():
                 control += control_structures[int(delta_else.split('_')[1])]
 
         # Rule 9
-        elif (symbol.startswith("tau_")):
+        elif (symbol[0:4] == "tau_"):
             n = int(symbol.split("_")[1])
             tau_list = []
             for i in range(n):
@@ -348,13 +348,13 @@ def apply_rules():
     if stack[0] == True or stack[0] == False:
         stack[0] = str(stack[0]).lower()
 
+# This function is called from the myrpal.py file.
 def get_result(file_name):
     global control
 
     st = standardize(file_name)
     
     generate_control_structure(st,0) 
- #   print(control_structures)
     
     control.append(environments[0].name)
     control += control_structures[0]
@@ -365,4 +365,3 @@ def get_result(file_name):
 
     if print_present:
         print(stack[0])
-#    print(stack[0])
