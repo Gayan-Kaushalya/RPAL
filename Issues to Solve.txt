@@ -26,3 +26,6 @@ Error occured while reading single integer, Checke whether it happens in test ca
 
 stack in cse machine
 starts with
+
+other files in separate folder
+looks like parent and child is not needed

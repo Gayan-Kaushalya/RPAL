@@ -72,9 +72,8 @@ def generate_control_structure(root, i):
 
 
 def lookup(name):
-    global environments
-    global builtInFunctions
-    global stack
+
+    
     if(name.startswith("INT", 1)):
         return int(name[5:-1])
     elif(name.startswith("STR", 1)):
@@ -97,23 +96,20 @@ def lookup(name):
     elif(name.startswith("nil", 1)):
         return ()
     elif(name.startswith("true", 1)):
-        return True
+        return "true"
     elif(name.startswith("false", 1)):
-        return False
+        return "false"
 
 def apply_rules():
-    op = ["+", "-", "*", "/", "**", "gr", "ge","ls", "le", "eq", "ne", "or", "&", "aug"]
-    uop = ["neg","not"]
+    op = ["+", "-", "*", "/", "**", "gr", "ge", "ls", "le", "eq", "ne", "or", "&", "aug"]
+    uop = ["neg", "not"]
 
     global control
     global current_environment
     global print_present
 
     while(len(control) > 0):
-        print(control)
-        print(stack)
-        print('\n')
-        
+     
         symbol = control.pop()
 
         # Rule 1
@@ -212,33 +208,33 @@ def apply_rules():
 
             elif (stack_symbol_1 == "Isinteger"):
                 if (type(stack_symbol_2) == int):
-                    stack.append(True)
+                    stack.append("true")
                 else:
-                    stack.append(False)
+                    stack.append("false")
                 
             elif (stack_symbol_1 == "Istruthvalue"):
                 if (type(stack_symbol_2) == bool):
-                    stack.append(True)
+                    stack.append("true")
                 else:
-                    stack.append(False)
+                    stack.append("false")
 
             elif (stack_symbol_1 == "Isstring"):
                 if (type(stack_symbol_2) == str):
-                    stack.append(True)
+                    stack.append("true")
                 else:
-                    stack.append(False)
+                    stack.append("false")
 
             elif (stack_symbol_1 == "Istuple"):
                 if (type(stack_symbol_2) == tuple):
-                    stack.append(True)
+                    stack.append("true")
                 else:
-                    stack.append(False)
+                    stack.append("false")
 
             elif (stack_symbol_1 == "Isfunction"):
                 if (stack_symbol_2 in builtInFunctions):
-                    return True
+                    return "true"
                 else:
-                    False
+                    "false"
             
             # ItoS function converts integers to strings.        
             elif (stack_symbol_1 == "ItoS"):
@@ -350,8 +346,8 @@ def apply_rules():
                 stack[0] = temp
                 
     # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour.    
-    if stack[0] == True or stack[0] == False:
-        stack[0] = str(stack[0]).lower()
+  #  if stack[0] == "true" or stack[0] == "false":
+  #      stack[0] = str(stack[0]).lower()
 
 def get_result(file_name):
     global control
@@ -359,7 +355,7 @@ def get_result(file_name):
     st = standardize(file_name)
     
     generate_control_structure(st,0) 
-    print(control_structures)
+ #   print(control_structures)
     
     control.append(environments[0].name)
     control += control_structures[0]
@@ -370,3 +366,4 @@ def get_result(file_name):
 
     if print_present:
         print(stack[0])
+ #   print(stack[0])
