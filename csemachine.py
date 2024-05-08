@@ -302,7 +302,7 @@ def apply_rules():
             rand = stack.pop()
             if (symbol == "not"):
                 stack.append(not rand)
-            elif (symbol == "-"):
+            elif (symbol == "neg"):
                 stack.append(-rand)
 
         # Rule 8
@@ -348,8 +348,10 @@ def apply_rules():
                     temp += element + ", "
                 temp = temp[:-2] + ")"
                 stack[0] = temp
-        
-    
+                
+    # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour.    
+    if stack[0] == True or stack[0] == False:
+        stack[0] = str(stack[0]).lower()
 
 def get_result(file_name):
     global control
