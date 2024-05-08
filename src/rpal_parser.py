@@ -5,6 +5,7 @@ from src.node import *
 # A stack containing nodes
 stack = Stack()
 
+# This function is used to build the abstract syntax tree.
 def build_tree(value, num_children):
     node = Node(value)
     node.children = [None] * num_children
@@ -20,6 +21,7 @@ def build_tree(value, num_children):
 def print_tree(root):
     preorder_traversal(root)
  
+# This function is used to read the expected token. 
 def read(expected_token):
     if tokens[0].content != expected_token:
         print("Syntax error in line " + str(tokens[0].line) + ": Expected " + str(expected_token) + " but got " + str(tokens[0].content))
@@ -36,6 +38,8 @@ def read(expected_token):
 def parse(prog_file):
     global tokens
     tokens, invalid_flag, invalid_token = screen(prog_file)
+    
+    # If there are invalid tokens, we cannot proceed with the parsing.
     if invalid_flag:
         print("Invalid token present in line " + str(invalid_token.line) + ": " + str(invalid_token.content))
         exit(1)

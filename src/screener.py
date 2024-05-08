@@ -1,8 +1,7 @@
 from src.lexical_analyzer import tokenize
 
-
-
 def screen(file_name):
+    # list of keywords in RPAL
     keywords = [
         "let",
         "in",
@@ -37,7 +36,7 @@ def screen(file_name):
                 for character in line:
                     characters.append(character)
             token_list = tokenize(characters)
-            characters.clear()
+       #     characters.clear()
     except FileNotFoundError:
         print("File not found.")
         exit(1)
@@ -49,12 +48,15 @@ def screen(file_name):
     for i in range(len(token_list) - 1, -1, -1):
         token = token_list[i]
         
+        # If the token is an identifier and it is a keyword, it should be marked as a keyword.
         if token.type == "<IDENTIFIER>" and token.content in keywords:
             token.make_keyword()
         
+        # If the token is should be deleted, it should be removed from the list.
         if token.type == "<DELETE>" or token.content == "\n":            
             token_list.remove(token)
             
+        # If there are invalid tokens, the first invalid token will be marked as the invalid token.    
         if token.type == "<INVALID>":
             if invalid_token_present == False:
                 invalid_token = token

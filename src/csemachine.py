@@ -19,7 +19,7 @@ def generate_control_structure(root, i):
     while(len(control_structures) <= i):
         control_structures.append([])
 
-    # When lambda is encountered, we need to generate a new control structure.
+    # When lambda is encountered, we have to generate a new control structure.
     if (root.value == "lambda"):
         count += 1
         left_child = root.children[0]
@@ -349,7 +349,7 @@ def apply_rules():
     if stack[0] == True or stack[0] == False:
         stack[0] = str(stack[0]).lower()
 
-# This function is called from the myrpal.py file.
+# The following function is called from the myrpal.py file.
 def get_result(file_name):
     global control
 

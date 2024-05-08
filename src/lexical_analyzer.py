@@ -38,7 +38,7 @@ def tokenize(characters):
                 current_token += characters[i]
                 i += 1
                 
-                # We have to detect invalid tokens such as 123a
+                # We have to detect invalid tokens such as 123a.
                 while i < len(characters): 
                     if characters[i] in digits:
                         current_token += characters[i]
@@ -99,7 +99,7 @@ def tokenize(characters):
                         i += 1
                         
                 if len(current_token) == 1 or current_token[-1] != "'":
-                    print("String not closed properly.")
+                    print("String is not closed properly.")
                     exit(1)
                         
                 tokens.append(current_token)
