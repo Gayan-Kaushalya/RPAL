@@ -329,7 +329,14 @@ def apply_rules():
         
         stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
          
-    if type(stack[0]) == tuple:
+    if type(stack[0]) == tuple:          
+        # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour. 
+        for i in range(len(stack[0])):
+            if stack[0][i] == True or stack[0][i] == False:
+                stack[0] = list(stack[0])
+                stack[0][i] = str(stack[0][i]).lower()
+                stack[0] = tuple(stack[0])
+                
         # The rpal.exe program does not print the comma when there is only one element in the tuple.
         # Our code must emulate this behaviour.  
         if len(stack[0]) == 1:
