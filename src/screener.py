@@ -1,31 +1,32 @@
 from src.lexical_analyzer import tokenize
 
-keywords = [
-    "let",
-    "in",
-    "where",
-    "rec",
-    "fn" ,          
-    "aug",
-    "or",
-    "not",
-    "gr",
-    "ge",
-    "ls",
-    "le",
-    "eq",
-    "ne",
-    "true",
-    "false",
-    "nil",
-    "dummy",
-    "within",
-    "and",
-]
 
-characters = []
 
 def screen(file_name):
+    keywords = [
+        "let",
+        "in",
+        "where",
+        "rec",
+        "fn" ,          
+        "aug",
+        "or",
+        "not",
+        "gr",
+        "ge",
+        "ls",
+        "le",
+        "eq",
+        "ne",
+        "true",
+        "false",
+        "nil",
+        "dummy",
+        "within",
+        "and",
+        ]
+    
+    characters = []
     token_list = []
     invalid_token_present = False
     invalid_token = None

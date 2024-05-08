@@ -1,21 +1,17 @@
 from src.rpal_token import Token
 
-letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-digits = '0123456789'
-underscore = '_'
-operators = '+-*<>&.@/:=~|$!#%^_[]{}\"?'
-punctuation = '();,'
-newline = '\n'
+def tokenize(characters): 
+    letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    digits = '0123456789'
+    underscore = '_'
+    operators = '+-*<>&.@/:=~|$!#%^_[]{}\"?'
+    punctuation = '();,'
+    newline = '\n'
 
-
-# Must check whether we can remove the following three lines.
-token_names = []
-tokens = []
-characters = []
-line_numbers = []
-
-
-def tokenize(characters):  
+    token_names = []
+    tokens = []
+    line_numbers = [] 
+    
     i = 0
     current_token = ''
     line_number = 1
@@ -158,15 +154,7 @@ def tokenize(characters):
                             token_names.append('<OPERATOR>')
                             current_token = ''
                             line_numbers.append(line_number)
-                            break
-                    '''   
-                    if characters[i] == "'":
-                        tokens.append(current_token)
-                        token_names.append('<OPERATOR>')
-                        current_token = ''
-                        line_numbers.append(line_number)
-                        break
-                     '''        
+                            break     
                     
                     current_token += characters[i]
                     i += 1
@@ -177,7 +165,7 @@ def tokenize(characters):
                 
                 current_token = ''
 
-            ## This will handle the case of invalid characters
+            # This will handle the case of invalid characters
             else:
                 print(f"Invalid character: {characters[i]} at position {i}")
                 exit(1)

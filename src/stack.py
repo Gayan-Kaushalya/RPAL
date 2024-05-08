@@ -2,6 +2,7 @@ class Stack:
     def __init__(self):
         self.stack = []
         
+    # Implementing methods to make the class iterable and indexable
     def __getitem__(self, index):
         return self.stack[index]
     
