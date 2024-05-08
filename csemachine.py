@@ -96,9 +96,9 @@ def lookup(name):
     elif(name.startswith("nil", 1)):
         return ()
     elif(name.startswith("true", 1)):
-        return "true"
+        return True
     elif(name.startswith("false", 1)):
-        return "false"
+        return False
 
 def apply_rules():
     op = ["+", "-", "*", "/", "**", "gr", "ge", "ls", "le", "eq", "ne", "or", "&", "aug"]
@@ -208,33 +208,33 @@ def apply_rules():
 
             elif (stack_symbol_1 == "Isinteger"):
                 if (type(stack_symbol_2) == int):
-                    stack.append("true")
+                    stack.append(True)
                 else:
-                    stack.append("false")
+                    stack.append(False)
                 
             elif (stack_symbol_1 == "Istruthvalue"):
                 if (type(stack_symbol_2) == bool):
-                    stack.append("true")
+                    stack.append(True)
                 else:
-                    stack.append("false")
+                    stack.append(False)
 
             elif (stack_symbol_1 == "Isstring"):
                 if (type(stack_symbol_2) == str):
-                    stack.append("true")
+                    stack.append(True)
                 else:
-                    stack.append("false")
+                    stack.append(False)
 
             elif (stack_symbol_1 == "Istuple"):
                 if (type(stack_symbol_2) == tuple):
-                    stack.append("true")
+                    stack.append(True)
                 else:
-                    stack.append("false")
+                    stack.append(False)
 
             elif (stack_symbol_1 == "Isfunction"):
                 if (stack_symbol_2 in builtInFunctions):
-                    return "true"
+                    return True
                 else:
-                    "false"
+                    False
             
             # ItoS function converts integers to strings.        
             elif (stack_symbol_1 == "ItoS"):
@@ -261,7 +261,6 @@ def apply_rules():
             rand_1 = stack.pop()
             rand_2 = stack.pop()
             if (symbol == "+"):
-                print(rand_1, rand_2)
                 stack.append(rand_1+rand_2)
             elif (symbol == "-"):
                 stack.append(rand_1-rand_2)
@@ -324,7 +323,7 @@ def apply_rules():
             stack.append(symbol)
 
     # Lambda expression becomes a lambda closure when its environment is determined.
-    if type(stack[0]) == "str" and stack[0][:7] == "lambda_":
+    if type(stack[0]) == str and stack[0][:7] == "lambda_":
         lambda_info = stack[0].split("_")
         
         stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
@@ -346,8 +345,8 @@ def apply_rules():
                 stack[0] = temp
                 
     # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour.    
-  #  if stack[0] == "true" or stack[0] == "false":
-  #      stack[0] = str(stack[0]).lower()
+    if stack[0] == True or stack[0] == False:
+        stack[0] = str(stack[0]).lower()
 
 def get_result(file_name):
     global control
@@ -366,4 +365,4 @@ def get_result(file_name):
 
     if print_present:
         print(stack[0])
- #   print(stack[0])
+#    print(stack[0])
