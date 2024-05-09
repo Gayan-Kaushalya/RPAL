@@ -24,14 +24,22 @@ def generate_control_structure(root, i):
     if (root.value == "lambda"):
         count += 1
         left_child = root.children[0]
+        
         if (left_child.value == ","):
-            temp = "lambda" + "_" + str(count) + "_"
+            temp = Lambda(count)
+
+            x = ""
+            
             for child in left_child.children:
-                temp += child.value[4:-1] + ","
-            temp = temp[:-1]
+                x += child.value[4:-1] + ","
+            x = x[:-1]
+            
+            temp.bounded_variable = x
             control_structures[i].append(temp)
+            
         else:
-            temp = "lambda" + "_" + str(count) + "_" + left_child.value[4:-1]
+            temp = Lambda(count)
+            temp.bounded_variable = left_child.value[4:-1]
             control_structures[i].append(temp)
 
         for child in root.children[1:]:
@@ -61,32 +69,43 @@ def generate_control_structure(root, i):
         for child in root.children:
             generate_control_structure(child, i)
 
-
+# This function is used for tokens that begin with '<' and end with '>'.
 def lookup(name):
-    if name[1:4] == "INT":
-        return int(name[5:-1])
-    elif name[1:4] == "STR":
-        return name[5:-1].strip("'")
-    elif name[1:3] == "ID":
-        variable = name[4:-1]
-        if (variable in builtInFunctions):
-            return variable
-        else:
-            try:
-                value = environments[current_environment].variables[variable]
-            except KeyError:
-                print("Undeclared Identifier: " + variable)
-                exit(1)
-            else:
+    name = name[1:-1]
+    info = name.split(":")
+    
+    if (len(info) == 1):
+        value = info[0]
+    else:
+        data_type = info[0]
+        value = info[1]
+    
+        if data_type == "INT":
+            return int(value)
+        
+        # The rpal.exe program detects srings only when they begin with ' and end with '.
+        # Our code must emulate this behaviour.
+        elif data_type == "STR":
+            return value.strip("'")
+        elif data_type == "ID":
+            if (value in builtInFunctions):
                 return value
+            else:
+                try:
+                    value = environments[current_environment].variables[value]
+                except KeyError:
+                    print("Undeclared Identifier: " + value)
+                    exit(1)
+                else:
+                    return value
             
-    elif name[1:3] == "Y*":
+    if value == "Y*":
         return "Y*"
-    elif name[1:4] == "nil":
+    elif value == "nil":
         return ()
-    elif name[1:5] == "true":
+    elif value == "true":
         return True
-    elif name[1:6] == "false":
+    elif value == "false":
         return False
     
 def built_in(function, argument):
@@ -177,7 +196,9 @@ def apply_rules():
     global current_environment
 
     while(len(control) > 0):
-     
+        print(control)
+        print(stack)
+        
         symbol = control.pop()
 
         # Rule 1
@@ -185,26 +206,21 @@ def apply_rules():
             stack.push(lookup(symbol))
 
         # Rule 2
-        elif type(symbol) == str and (symbol[0:6] == "lambda"):
-            stack.push(symbol+"_"+str(current_environment))
+        elif type(symbol) == Lambda:
+            symbol.environment = current_environment
+            stack.push(symbol)
 
         # Rule 4
         elif (symbol == "gamma"):
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
-            if (type(stack_symbol_1) == str and stack_symbol_1[0:6] == "lambda"):
+            if (type(stack_symbol_1) == Lambda):
                 current_environment = len(environments)
-                lambda_data = stack_symbol_1.split("_")
                 
-                # In some cases, there may be prases like 'lambda_2_Rec_F_0'. We need to handle this case.
-                if (len(lambda_data) > 4):
-                    temp = "_".join(lambda_data[2:-1])
-                    lambda_data = [lambda_data[0], lambda_data[1], temp, lambda_data[-1]]
-                
-                lambda_number = int(lambda_data[1])
-                bounded_variable = lambda_data[2]
-                parent_environment_number = int(lambda_data[3])
+                lambda_number = stack_symbol_1.number
+                bounded_variable = stack_symbol_1.bounded_variable
+                parent_environment_number = stack_symbol_1.environment
 
                 parent = environments[parent_environment_number]
                 child = Environment(current_environment, parent)
@@ -222,20 +238,30 @@ def apply_rules():
 
                 stack.push(child.name)
                 control.append(child.name)
-                control += control_structures[int(lambda_number)]
+                control += control_structures[lambda_number]
 
             # Rule 10
             elif (type(stack_symbol_1) == tuple):
-                stack.push(stack_symbol_1[stack_symbol_2-1])
+                if type(stack_symbol_2) == tuple:
+                    print(stack_symbol_2)
+                    print(stack_symbol_1)
+                    stack.push(stack_symbol_2 + stack_symbol_1)
+                else:
+                    stack.push(stack_symbol_1[stack_symbol_2-1])
 
             # Rule 12
             elif (stack_symbol_1 == "Y*"):
-                temp = "eta" + stack_symbol_2[6:]
+                temp = Eta(stack_symbol_2.number)
+                temp.bounded_variable = stack_symbol_2.bounded_variable
+                temp.environment = stack_symbol_2.environment
                 stack.push(temp)
 
             # Rule 13
-            elif (type(stack_symbol_1) == str and stack_symbol_1[0:3] == "eta"):
-                temp = "lambda" + stack_symbol_1[3:]
+            elif (type(stack_symbol_1) == Eta):
+                temp = Lambda(stack_symbol_1.number)
+                temp.bounded_variable = stack_symbol_1.bounded_variable
+                temp.environment = stack_symbol_1.environment
+                
                 control.append("gamma")
                 control.append("gamma")
                 stack.push(stack_symbol_2)
@@ -325,15 +351,13 @@ def apply_rules():
             stack.push(symbol)
 
     # Lambda expression becomes a lambda closure when its environment is determined.
-    if type(stack[0]) == str and stack[0][:7] == "lambda_":
-        lambda_info = stack[0].split("_")
-        
-        stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
-         
+    if type(stack[0]) == Lambda:
+        stack[0] = "[lambda closure: " + str(stack[0].bounded_variable)  + ": " + str(stack[0].number) + "]"
+                 
     if type(stack[0]) == tuple:          
         # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour. 
         for i in range(len(stack[0])):
-            if stack[0][i] == bool:
+            if type(stack[0][i]) == bool:
                 stack[0] = list(stack[0])
                 stack[0][i] = str(stack[0][i]).lower()
                 stack[0] = tuple(stack[0])
