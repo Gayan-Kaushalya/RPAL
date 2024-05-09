@@ -2,6 +2,7 @@ from src.standardizer import standardize
 from src.node import *
 from src.environment import Environment
 from src.stack import Stack
+from src.structures import *
 
 control_structures = []
 count = 0
@@ -38,11 +39,11 @@ def generate_control_structure(root, i):
 
     elif (root.value == "->"):
         count += 1
-        temp = "delta" + "_" + str(count)
+        temp = Delta(count)
         control_structures[i].append(temp)
         generate_control_structure(root.children[1], count)
         count += 1
-        temp = "delta" + "_" + str(count)
+        temp = Delta(count)
         control_structures[i].append(temp)
         generate_control_structure(root.children[2], count)
         control_structures[i].append("beta")
@@ -304,12 +305,12 @@ def apply_rules():
         # Rule 8
         elif (symbol == "beta"):
             B = stack.pop()
-            delta_else = control.pop()
-            delta_then = control.pop()
+            else_part = control.pop()
+            then_part = control.pop()
             if (B):
-                control += control_structures[int(delta_then.split('_')[1])]
+                control += control_structures[then_part.number]
             else:
-                control += control_structures[int(delta_else.split('_')[1])]
+                control += control_structures[else_part.number]
 
         # Rule 9
         elif (symbol[0:4] == "tau_"):
