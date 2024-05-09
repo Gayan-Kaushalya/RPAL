@@ -25,13 +25,18 @@ def generate_control_structure(root, i):
         count += 1
         left_child = root.children[0]
         if (left_child.value == ","):
-            temp = "lambda" + "_" + str(count) + "_"
+            temp = Lambda(count)
+            
+            x = ""
             for child in left_child.children:
-                temp += child.value[4:-1] + ","
-            temp = temp[:-1]
+                x += child.value[4:-1] + ","
+            x = x[:-1]
+            
+            temp.bounded_variable = x
             control_structures[i].append(temp)
         else:
-            temp = "lambda" + "_" + str(count) + "_" + left_child.value[4:-1]
+            temp = Lambda(count)
+            temp.bounded_variable = left_child.value[4:-1]
             control_structures[i].append(temp)
 
         for child in root.children[1:]:
@@ -196,8 +201,8 @@ def apply_rules():
             stack.push(lookup(symbol))
 
         # Rule 2
-        elif type(symbol) == str and (symbol[0:6] == "lambda"):
-            stack.push(symbol+"_"+str(current_environment))
+        elif type(symbol) == Lambda:
+            stack.push("lambda_" + str(symbol.number) + "_" + symbol.bounded_variable + "_" + str(current_environment))
 
         # Rule 4
         elif (symbol == "gamma"):
