@@ -241,12 +241,22 @@ def apply_rules():
 
             # Rule 12
             elif (stack_symbol_1 == "Y*"):
-                temp = "eta" + stack_symbol_2[6:]
+                info = stack_symbol_2.split("_")
+                
+                
+                
+                temp = Eta(int(info[1]))
+                temp.bounded_variable = info[2]
+                temp.environment = info[3]
                 stack.push(temp)
 
             # Rule 13
-            elif (type(stack_symbol_1) == str and stack_symbol_1[0:3] == "eta"):
-                temp = "lambda" + stack_symbol_1[3:]
+            elif (type(stack_symbol_1) == Eta):
+                temp = "lambda_" + str(stack_symbol_1.number) 
+                if (stack_symbol_1.bounded_variable != None):
+                    temp += "_" + stack_symbol_1.bounded_variable
+                if (stack_symbol_1.environment != None):
+                    temp += "_" + stack_symbol_1.environment
                 control.append("gamma")
                 control.append("gamma")
                 stack.push(stack_symbol_2)
