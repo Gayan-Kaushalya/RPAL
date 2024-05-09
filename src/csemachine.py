@@ -202,25 +202,31 @@ def apply_rules():
 
         # Rule 2
         elif type(symbol) == Lambda:
-            stack.push("lambda_" + str(symbol.number) + "_" + symbol.bounded_variable + "_" + str(current_environment))
+            temp = Lambda(symbol.number)
+            temp.bounded_variable = symbol.bounded_variable
+            temp.environment = current_environment
+            stack.push(temp)
 
         # Rule 4
         elif (symbol == "gamma"):
             stack_symbol_1 = stack.pop()
             stack_symbol_2 = stack.pop()
 
-            if (type(stack_symbol_1) == str and stack_symbol_1[0:6] == "lambda"):
+            if (type(stack_symbol_1) == Lambda):
                 current_environment = len(environments)
-                lambda_data = stack_symbol_1.split("_")
+      #          lambda_data = [0, stack_symbol_1.number, stack_symbol_1.bounded_variable, stack_symbol_1.environment]
                 
+                '''
                 # In some cases, there may be prases like 'lambda_2_Rec_F_0'. We need to handle this case.
                 if (len(lambda_data) > 4):
                     temp = "_".join(lambda_data[2:-1])
                     lambda_data = [lambda_data[0], lambda_data[1], temp, lambda_data[-1]]
+                 '''   
+          #      print(lambda_data)
                 
-                lambda_number = int(lambda_data[1])
-                bounded_variable = lambda_data[2]
-                parent_environment_number = int(lambda_data[3])
+                lambda_number = stack_symbol_1.number
+                bounded_variable = stack_symbol_1.bounded_variable
+                parent_environment_number = stack_symbol_1.environment
 
                 parent = environments[parent_environment_number]
                 child = Environment(current_environment, parent)
@@ -238,7 +244,7 @@ def apply_rules():
 
                 stack.push(child.name)
                 control.append(child.name)
-                control += control_structures[int(lambda_number)]
+                control += control_structures[lambda_number]
 
             # Rule 10
             elif (type(stack_symbol_1) == tuple):
@@ -246,22 +252,21 @@ def apply_rules():
 
             # Rule 12
             elif (stack_symbol_1 == "Y*"):
-                info = stack_symbol_2.split("_")
+                info = [0, stack_symbol_2.number, stack_symbol_2.bounded_variable, stack_symbol_2.environment]
                 
                 
-                
-                temp = Eta(int(info[1]))
-                temp.bounded_variable = "_".join(info[2:-1]) 
-                temp.environment = info[-1]
+                print(info)
+                temp = Eta(stack_symbol_2.number)
+                temp.bounded_variable = stack_symbol_2.bounded_variable
+                temp.environment = stack_symbol_2.environment
                 stack.push(temp)
 
             # Rule 13
             elif (type(stack_symbol_1) == Eta):
-                temp = "lambda_" + str(stack_symbol_1.number) 
-                if (stack_symbol_1.bounded_variable != None):
-                    temp += "_" + stack_symbol_1.bounded_variable
-                if (stack_symbol_1.environment != None):
-                    temp += "_" + stack_symbol_1.environment
+                temp = Lambda(stack_symbol_1.number)
+                temp.bounded_variable = stack_symbol_1.bounded_variable
+                temp.environment = stack_symbol_1.environment
+                
                 control.append("gamma")
                 control.append("gamma")
                 stack.push(stack_symbol_2)
@@ -351,10 +356,10 @@ def apply_rules():
             stack.push(symbol)
 
     # Lambda expression becomes a lambda closure when its environment is determined.
-    if type(stack[0]) == str and stack[0][:7] == "lambda_":
-        lambda_info = stack[0].split("_")
+    # Lambda expression becomes a lambda closure when its environment is determined.
+    if type(stack[0]) == Lambda:
         
-        stack[0] = "[lambda closure: " + lambda_info[2] + ": " + lambda_info[1] + "]"
+        stack[0] = "[lambda closure: " + str(stack[0].bounded_variable) + ": " + str(stack[0].number) + "]"
          
     if type(stack[0]) == tuple:          
         # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour. 
