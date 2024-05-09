@@ -51,7 +51,7 @@ def generate_control_structure(root, i):
 
     elif (root.value == "tau"):
         n = len(root.children)
-        temp = "tau" + "_" + str(n)
+        temp = Tau(n)
         control_structures[i].append(temp)
         for child in root.children:
             generate_control_structure(child, i)
@@ -181,11 +181,11 @@ def apply_rules():
         symbol = control.pop()
 
         # Rule 1
-        if (symbol[0] == "<" and symbol[-1] == ">"):
+        if type(symbol) == str and (symbol[0] == "<" and symbol[-1] == ">"):
             stack.push(lookup(symbol))
 
         # Rule 2
-        elif (symbol[0:6] == "lambda"):
+        elif type(symbol) == str and (symbol[0:6] == "lambda"):
             stack.push(symbol+"_"+str(current_environment))
 
         # Rule 4
@@ -247,7 +247,7 @@ def apply_rules():
                 built_in(stack_symbol_1, stack_symbol_2)
               
         # Rule 5
-        elif (symbol[0:2] == "e_"):
+        elif type(symbol) == str and (symbol[0:2] == "e_"):
             stack_symbol = stack.pop()
             stack.pop()
             
@@ -313,8 +313,8 @@ def apply_rules():
                 control += control_structures[else_part.number]
 
         # Rule 9
-        elif (symbol[0:4] == "tau_"):
-            n = int(symbol.split("_")[1])
+        elif type(symbol) == Tau:
+            n = symbol.number
             tau_list = []
             for i in range(n):
                 tau_list.append(stack.pop())
