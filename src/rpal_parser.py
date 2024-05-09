@@ -3,7 +3,7 @@ from src.stack import Stack
 from src.node import *
 
 # A stack containing nodes
-stack = Stack()
+stack = Stack("AST")
 
 # This function is used to build the abstract syntax tree.
 def build_tree(value, num_children):

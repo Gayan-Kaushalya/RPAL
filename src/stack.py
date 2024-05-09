@@ -1,6 +1,11 @@
 class Stack:
-    def __init__(self):
+    def __init__(self, type):
         self.stack = []
+        self.type = type
+        
+    # The following method is implemented for debugging purposes.
+    def __repr__(self):
+        return str(self.stack)
         
     # The following three methods are implemented to make the class iterable and indexable
     def __getitem__(self, index):
@@ -21,7 +26,10 @@ class Stack:
         if not self.is_empty():
             return self.stack.pop()
         else:
-            print("Stack is empty.")
+            if self.type == "CSE":
+                print("Stack in CSE machine has become empty unexpectedly.")
+            else:
+                print("Stack used for AST generation has become empty unexpectedly.")
             exit(1)
 
     # The following function lets you check whether the stack is empty.

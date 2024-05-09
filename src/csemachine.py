@@ -7,7 +7,7 @@ from src.structures import *
 control_structures = []
 count = 0
 control = []
-stack = Stack()
+stack = Stack("CSE")
 environments = [Environment(0, None)]
 current_environment = 0
 builtInFunctions = ["Order", "Print", "print", "Conc", "Stern", "Stem", "Isinteger", "Istruthvalue", "Isstring", "Istuple", "Isfunction", "ItoS"]
