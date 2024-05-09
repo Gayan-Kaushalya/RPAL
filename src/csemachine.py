@@ -61,32 +61,43 @@ def generate_control_structure(root, i):
         for child in root.children:
             generate_control_structure(child, i)
 
-
+# This function is used for tokens that begin with '<' and end with '>'.
 def lookup(name):
-    if name[1:4] == "INT":
-        return int(name[5:-1])
-    elif name[1:4] == "STR":
-        return name[5:-1].strip("'")
-    elif name[1:3] == "ID":
-        variable = name[4:-1]
-        if (variable in builtInFunctions):
-            return variable
-        else:
-            try:
-                value = environments[current_environment].variables[variable]
-            except KeyError:
-                print("Undeclared Identifier: " + variable)
-                exit(1)
-            else:
+    name = name[1:-1]
+    info = name.split(":")
+    
+    if (len(info) == 1):
+        value = info[0]
+    else:
+        data_type = info[0]
+        value = info[1]
+    
+        if data_type == "INT":
+            return int(value)
+        
+        # The rpal.exe program detects srings only when they begin with ' and end with '.
+        # Our code must emulate this behaviour.
+        elif data_type == "STR":
+            return value.strip("'")
+        elif data_type == "ID":
+            if (value in builtInFunctions):
                 return value
+            else:
+                try:
+                    value = environments[current_environment].variables[value]
+                except KeyError:
+                    print("Undeclared Identifier: " + value)
+                    exit(1)
+                else:
+                    return value
             
-    elif name[1:3] == "Y*":
+    if value == "Y*":
         return "Y*"
-    elif name[1:4] == "nil":
+    elif value == "nil":
         return ()
-    elif name[1:5] == "true":
+    elif value == "true":
         return True
-    elif name[1:6] == "false":
+    elif value == "false":
         return False
     
 def built_in(function, argument):
@@ -333,7 +344,7 @@ def apply_rules():
     if type(stack[0]) == tuple:          
         # The rpal.exe program prints the boolean values in lowercase. Our code must emulate this behaviour. 
         for i in range(len(stack[0])):
-            if stack[0][i] == bool:
+            if type(stack[0][i]) == bool:
                 stack[0] = list(stack[0])
                 stack[0][i] = str(stack[0][i]).lower()
                 stack[0] = tuple(stack[0])
