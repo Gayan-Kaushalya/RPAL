@@ -251,8 +251,8 @@ def apply_rules():
                 
                 
                 temp = Eta(int(info[1]))
-                temp.bounded_variable = info[2]
-                temp.environment = info[3]
+                temp.bounded_variable = "_".join(info[2:-1]) 
+                temp.environment = info[-1]
                 stack.push(temp)
 
             # Rule 13
