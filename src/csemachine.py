@@ -214,14 +214,6 @@ def apply_rules():
 
             if (type(stack_symbol_1) == Lambda):
                 current_environment = len(environments)
-   #             lambda_data = stack_symbol_1.split("_")
-                
-                '''
-                # In some cases, there may be prases like 'lambda_2_Rec_F_0'. We need to handle this case.
-                if (len(lambda_data) > 4):
-                    temp = "_".join(lambda_data[2:-1])
-                    lambda_data = [lambda_data[0], lambda_data[1], temp, lambda_data[-1]]
-                    '''
                 
                 lambda_number = stack_symbol_1.number
                 bounded_variable = stack_symbol_1.bounded_variable
@@ -251,10 +243,6 @@ def apply_rules():
 
             # Rule 12
             elif (stack_symbol_1 == "Y*"):
-       #         info = stack_symbol_2.split("_")
-                
-                
-                
                 temp = Eta(stack_symbol_2.number)
                 temp.bounded_variable = stack_symbol_2.bounded_variable
                 temp.environment = stack_symbol_2.environment
