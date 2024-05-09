@@ -239,7 +239,7 @@ def apply_rules():
 
             # Rule 10
             elif (type(stack_symbol_1) == tuple):
-                stack.push(stack_symbol_1[stack_symbol_2-1])
+                stack.push(stack_symbol_1[stack_symbol_2 - 1])
 
             # Rule 12
             elif (stack_symbol_1 == "Y*"):
@@ -344,7 +344,6 @@ def apply_rules():
 
     # Lambda expression becomes a lambda closure when its environment is determined.
     if type(stack[0]) == Lambda:
-        
         stack[0] = "[lambda closure: " + str(stack[0].bounded_variable) + ": " + str(stack[0].number) + "]"
          
     if type(stack[0]) == tuple:          
