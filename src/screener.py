@@ -1,7 +1,7 @@
 from src.lexical_analyzer import tokenize
 
 def screen(file_name):
-    # list of keywords in RPAL
+    # List of keywords in RPAL
     keywords = [
         "let",
         "in",
@@ -36,7 +36,7 @@ def screen(file_name):
                 for character in line:
                     characters.append(character)
             token_list = tokenize(characters)
-       #     characters.clear()
+
     except FileNotFoundError:
         print("File not found.")
         exit(1)

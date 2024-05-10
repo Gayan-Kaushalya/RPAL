@@ -17,7 +17,8 @@ def build_tree(value, num_children):
         node.children[num_children - i - 1] = stack.pop()
         
     stack.push(node)
-    
+ 
+# This function is used to print the abstract syntax tree in preorder traversal.    
 def print_tree(root):
     preorder_traversal(root)
  
