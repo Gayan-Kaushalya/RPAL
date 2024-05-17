@@ -97,7 +97,7 @@ def procedure_E():
 
 ##############################################################
 def procedure_Ew():
-    # E -> T    
+    # Ew -> T    
     procedure_T()
     
     # Ew -> T 'where' Dr   
