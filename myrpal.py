@@ -1,7 +1,7 @@
 # Description: This file is the main file that will be run to execute the program. It will take in the command line arguments and execute the program accordingly.
 # You cannot run this file in the IDE. You must run it in the terminal.
 # The command should be in the following format:
-# ./myrpal.py [-l] [-ast] [-st] filename
+# python ./myrpal.py [-l] [-ast] [-st] filename
 
 from src.rpal_parser import parse
 from src.node import preorder_traversal
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     arguments = sys.argv
     
     if len(arguments) < 2:
-        print("Wrong command. Make sure the command is in the following format. \n ./myrpal.py [-l] [-ast] [-st] filename")
+        print("Wrong command. Make sure the command is in the following format. \n python ./myrpal.py [-l] [-ast] [-st] filename")
         sys.exit(1)
         
     else:
@@ -57,5 +57,5 @@ if __name__ == "__main__":
                     exit()
             
             else:
-                print("Wrong command. Make sure the command is in the following format. \n ./myrpal.py [-l] [-ast] [-st] filename")
+                print("Wrong command. Make sure the command is in the following format. \n python ./myrpal.py [-l] [-ast] [-st] filename")
                 sys.exit(1)

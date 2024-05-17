@@ -359,13 +359,13 @@ def apply_rules():
         if len(stack[0]) == 1:
             stack[0] = "(" + str(stack[0][0]) + ")"
         
-        # The rpal.exe program does not print inverted commas when all the elements in the tuple are strings.
+        # The rpal.exe program does not print inverted commas when an element in the tuple is a string.
         # Our code must emulate this behaviour too. 
         else: 
-            if all(type(element) == str for element in stack[0]):
+            if any(type(element) == str for element in stack[0]):
                 temp = "("
                 for element in stack[0]:
-                    temp += element + ", "
+                    temp += str(element) + ", "
                 temp = temp[:-2] + ")"
                 stack[0] = temp
                 
