@@ -1,12 +1,14 @@
 
 from src.rpal_parser import *
 
+# The standardize function takes a file name as input and returns a standardized tree.
 def standardize(file_name):
     ast = parse(file_name)
     st = make_standardized_tree(ast)
     
     return st
 
+# The make_standardized_tree function takes a root node as input and returns a standardized tree.
 def make_standardized_tree(root):
     for child in root.children:
         make_standardized_tree(child)
@@ -165,11 +167,3 @@ def make_standardized_tree(root):
         root.value = "="
 
     return root
-
-
-'''
-prog_file = input()
-st = standardize(prog_file)
-
-preorder_traversal(st)
-'''

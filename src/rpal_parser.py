@@ -36,9 +36,9 @@ def read(expected_token):
             tokens[0].type = ")"    
             
 
-def parse(prog_file):
+def parse(file_name):
     global tokens
-    tokens, invalid_flag, invalid_token = screen(prog_file)
+    tokens, invalid_flag, invalid_token = screen(file_name)
     
     # If there are invalid tokens, we cannot proceed with the parsing.
     if invalid_flag:

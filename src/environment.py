@@ -1,4 +1,4 @@
-class Environment(object):
+class Environment():
     def __init__(self, number, parent):
         self.name = "e_" + str(number)
         self.variables = {}

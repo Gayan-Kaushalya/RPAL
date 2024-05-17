@@ -7,7 +7,7 @@ class Stack:
     def __repr__(self):
         return str(self.stack)
         
-    # The following three methods are implemented to make the class iterable and indexable
+    # The following three methods are implemented to make the class iterable and indexable.
     def __getitem__(self, index):
         return self.stack[index]
     
